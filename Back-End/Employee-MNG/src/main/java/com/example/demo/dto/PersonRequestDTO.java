@@ -17,4 +17,5 @@ public class PersonRequestDTO {
 
     public PersonDetails personDetails;
     public Address address;
+    public Object employeeId;
 }

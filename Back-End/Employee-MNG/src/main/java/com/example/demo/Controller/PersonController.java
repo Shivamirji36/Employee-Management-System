@@ -1,25 +1,53 @@
 package com.example.demo.Controller;
 
-import com.example.demo.dto.*;
+import com.example.demo.dto.PersonRequestDTO;
 import com.example.demo.model.Person;
-import com.example.demo.service.*;
+import com.example.demo.service.PersonService;
 
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
-@RequestMapping("/api/person")
+@RequestMapping("/api/employees")
 public class PersonController {
-	
-	private final PersonService personService;
+
+    private final PersonService personService;
 
     public PersonController(PersonService personService) {
         this.personService = personService;
     }
 
+    // ================= CREATE =================
     @PostMapping
-    public Person savePerson(@RequestBody PersonRequestDTO dto) {
-
+    public Person createEmployee(@RequestBody PersonRequestDTO dto) {
         return personService.savePerson(dto);
     }
 
+    // ================= GET ALL =================
+    @GetMapping
+    public List<Person> getAllEmployees() {
+        return personService.getAllEmployees();
+    }
+
+    // ================= GET BY ID =================
+    @GetMapping("/{employeeId}")
+    public Person getEmployeeById(@PathVariable String employeeId) {
+        return personService.getEmployeeById(employeeId);
+    }
+
+    // ================= UPDATE =================
+    @PutMapping("/{employeeId}")
+    public Person updateEmployee(
+            @PathVariable String employeeId,
+            @RequestBody PersonRequestDTO dto) {
+        return personService.updateEmployee(employeeId, dto);
+    }
+
+    // ================= DELETE =================
+    @DeleteMapping("/{employeeId}")
+    public void deleteEmployee(@PathVariable String employeeId) {
+        personService.deleteEmployee(employeeId);
+    }
 }

@@ -8,8 +8,7 @@ import java.time.LocalDate;
 public class Person {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long employeeId;
+    private String employeeId;
 
     private String salutation;
     private String firstName;
@@ -29,12 +28,12 @@ public class Person {
     
     //Getters and Setters
 
-	public Long getEmployeeId() {
+	public String getEmployeeId() {
 		return employeeId;
 	}
 
-	public void setEmployeeId(Long employeeId) {
-		this.employeeId = employeeId;
+	public void setEmployeeId(Object employeeId2) {
+		this.employeeId = employeeId2.toString();
 	}
 
 	public String getSalutation() {
