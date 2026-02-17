@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 import { Employee } from '../models/employee.model';
 
 @Injectable({
@@ -13,28 +14,44 @@ export class EmployeeService {
   constructor(private http: HttpClient) {}
 
   getEmployees(): Observable<Employee[]> {
-    return this.http.get<Employee[]>(this.apiUrl);
+    return this.http.get<Employee[]>(this.apiUrl).pipe(
+      tap(data => console.log('Fetched employees:', data)),
+      catchError(this.handleError)
+    );
   }
 
   addEmployee(employee: Employee): Observable<Employee> {
-    return this.http.post<Employee>(this.apiUrl, employee);
+    console.log('Sending employee data to backend:', employee);
+    return this.http.post<Employee>(this.apiUrl, employee).pipe(
+      tap(response => console.log('Employee created successfully:', response)),
+      catchError(this.handleError)
+    );
   }
 
   updateEmployee(employee: Employee): Observable<Employee> {
+    console.log('Updating employee:', employee);
     return this.http.put<Employee>(
       `${this.apiUrl}/${employee.id}`,
       employee
+    ).pipe(
+      tap(response => console.log('Employee updated successfully:', response)),
+      catchError(this.handleError)
     );
   }
 
   deleteEmployee(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
+      tap(() => console.log('Employee deleted successfully')),
+      catchError(this.handleError)
+    );
   }
 
   activateEmployee(id: string): Observable<Employee> {
     return this.http.put<Employee>(
       `${this.apiUrl}/${id}/activate`,
       {}
+    ).pipe(
+      catchError(this.handleError)
     );
   }
 
@@ -42,6 +59,25 @@ export class EmployeeService {
     return this.http.put<Employee>(
       `${this.apiUrl}/${id}/deactivate`,
       {}
+    ).pipe(
+      catchError(this.handleError)
     );
+  }
+
+  private handleError(error: HttpErrorResponse) {
+    let errorMessage = 'An error occurred';
+    
+    if (error.error instanceof ErrorEvent) {
+      // Client-side error
+      errorMessage = `Error: ${error.error.message}`;
+      console.error('Client-side error:', errorMessage);
+    } else {
+      // Server-side error
+      errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
+      console.error('Server-side error:', error);
+      console.error('Error details:', error.error);
+    }
+    
+    return throwError(() => new Error(errorMessage));
   }
 }

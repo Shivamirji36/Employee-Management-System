@@ -1,3 +1,5 @@
+<!-- ================= MAIN EMPLOYEE DIALOG ================= -->
+
 <p-dialog
   [(visible)]="visible"
   [modal]="true"
@@ -9,12 +11,6 @@
 >
 
   <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()">
-
-    <!-- Custom backdrop -->
-    <div
-      *ngIf="showDesignationDialog || showEmployeeGroupDialog"
-      class="custom-backdrop">
-    </div>
 
     <div class="p-fluid">
 
@@ -30,25 +26,23 @@
             optionLabel="label"
             optionValue="value"
             placeholder="Select"
-            [filter]="true"
-            filterBy="label"
-            filterPlaceholder="Search by salutation">
+            [filter]="true">
           </p-select>
         </div>
 
         <div class="col-12 md:col-3">
           <label>First Name <span class="text-red-500">*</span></label>
-          <input pInputText class="w-full" formControlName="firstName" />
+          <input pInputText class="w-full" formControlName="firstName" placeholder="Enter first name" />
         </div>
 
         <div class="col-12 md:col-3">
           <label>Middle Name</label>
-          <input pInputText class="w-full" formControlName="middleName" />
+          <input pInputText class="w-full" formControlName="middleName" placeholder="Middle name (optional)" />
         </div>
 
         <div class="col-12 md:col-3">
           <label>Last Name <span class="text-red-500">*</span></label>
-          <input pInputText class="w-full" formControlName="lastName" />
+          <input pInputText class="w-full" formControlName="lastName" placeholder="Enter last name" />
         </div>
 
       </div>
@@ -67,14 +61,13 @@
           </p-select>
         </div>
 
-        <div class="flex-auto">
-          <label class="block mt-2">DOB</label>
+        <div class="col-12 md:col-3">
+          <label>DOB</label>
           <p-datepicker
             class="w-full"
             formControlName="dateOfBirth"
-            [iconDisplay]="'input'"
-            [showIcon]="true"
-            inputId="icondisplay">
+            placeholder="Select date of birth"
+            [showIcon]="true">
           </p-datepicker>
         </div>
 
@@ -84,36 +77,35 @@
             <label>No Phone</label>
           </div>
           <input
-            placeholder="Mobile"
             pInputText
             class="w-full"
-            formControlName="phone" />
+            formControlName="phone"
+            placeholder="Enter mobile number"
+            maxlength="10" />
         </div>
 
         <div class="col-12 md:col-3">
           <label>Employee ID</label>
-          <input pInputText class="w-full" formControlName="id" />
+          <input pInputText class="w-full" formControlName="id" placeholder="Employee ID (auto-generated)" />
         </div>
 
       </div>
 
+      <!-- ================= Person Details ================= -->
       <h4>Person Details</h4>
 
-      <!-- ================= Row 3 ================= -->
       <div class="grid">
 
         <div class="col-12 md:col-3">
           <label>Email <span class="text-red-500">*</span></label>
-          <input
-            pInputText
-            type="email"
-            class="w-full"
-            formControlName="email" />
+          <input pInputText type="email" class="w-full" formControlName="email" placeholder="Enter email address" />
         </div>
 
+        <!-- DESIGNATION -->
         <div class="col-12 md:col-3">
           <label>Designation</label>
-          <div class="flex gap-2 items-center">
+          <div class="flex align-items-center gap-1">
+
             <p-select
               class="w-full"
               [options]="designationOptions"
@@ -121,23 +113,25 @@
               optionLabel="label"
               optionValue="value"
               placeholder="Select"
-              [filter]="true"
-              filterBy="label"
-              filterPlaceholder="Search by designation">
+              [filter]="true">
             </p-select>
+
             <p-button
+              type="button"
               icon="pi pi-plus"
               [rounded]="true"
               [text]="true"
-              [raised]="true"
               (click)="openDesignationDialog()">
             </p-button>
+
           </div>
         </div>
 
+        <!-- EMPLOYEE GROUP -->
         <div class="col-12 md:col-3">
           <label>Employee Group</label>
-          <div class="flex gap-2 items-center">
+          <div class="flex align-items-center gap-1">
+
             <p-select
               class="w-full"
               [options]="employeeOptions"
@@ -145,23 +139,23 @@
               optionLabel="label"
               optionValue="value"
               placeholder="Select"
-              [filter]="true"
-              filterBy="label"
-              filterPlaceholder="Search by employee group">
+              [filter]="true">
             </p-select>
+
             <p-button
+              type="button"
               icon="pi pi-plus"
               [rounded]="true"
               [text]="true"
-              [raised]="true"
               (click)="openEmployeeGroupDialog()">
             </p-button>
+
           </div>
         </div>
 
         <div class="col-12 md:col-3">
           <label>Reporting Manager</label>
-          <input pInputText class="w-full" formControlName="reportingManager" />
+          <input pInputText class="w-full" formControlName="reportingManager" placeholder="Reporting manager name" />
         </div>
 
       </div>
@@ -177,7 +171,7 @@
             formControlName="department"
             optionLabel="label"
             optionValue="value"
-            placeholder="Select"
+            placeholder="Select department"
             [filter]="true">
           </p-select>
         </div>
@@ -190,16 +184,17 @@
             formControlName="status"
             optionLabel="label"
             optionValue="value"
-            placeholder="Select">
+            placeholder="Select status">
           </p-select>
         </div>
 
         <div class="col-12 md:col-3">
           <label>Relieving Date</label>
           <p-datepicker
-            [disabled]="true"
             class="w-full"
             formControlName="relievingDate"
+            placeholder="Relieving date"
+            [disabled]="true"
             [showIcon]="true">
           </p-datepicker>
         </div>
@@ -211,7 +206,9 @@
             [options]="employeeSiteOptions"
             formControlName="site"
             optionLabel="label"
-            optionValue="value">
+            optionValue="value"
+            placeholder="Select default site"
+            [filter]="true">
           </p-select>
         </div>
 
@@ -224,82 +221,178 @@
 
         <div class="col-12 md:col-3">
           <label>Country</label>
-          <p-select
-            class="w-full"
+          <p-select class="w-full"
             [options]="countryOptions"
             formControlName="country"
             optionLabel="label"
-            optionValue="value">
+            optionValue="value"
+            placeholder="Select country"
+            [filter]="true">
           </p-select>
         </div>
 
         <div class="col-12 md:col-3">
           <label>State</label>
-          <p-select
-            class="w-full"
+          <p-select class="w-full"
             [options]="stateOptions"
             formControlName="state"
             optionLabel="label"
-            optionValue="value">
+            optionValue="value"
+            placeholder="Select state"
+            [filter]="true">
           </p-select>
         </div>
 
         <div class="col-12 md:col-3">
           <label>City</label>
-          <p-select
-            class="w-full"
+          <p-select class="w-full"
             [options]="cityOptions"
             formControlName="city"
             optionLabel="label"
-            optionValue="value">
+            optionValue="value"
+            placeholder="Select city"
+            [filter]="true">
           </p-select>
         </div>
 
         <div class="col-12 md:col-3">
           <label>Zip Code</label>
-          <input pInputText class="w-full" formControlName="zipCode" />
+          <input pInputText class="w-full" formControlName="zipCode" placeholder="Enter zip code" maxlength="10" />
         </div>
 
       </div>
 
       <div class="grid">
 
-        <div class="card flex flex-column gap-2 col-12 md:col-3">
+        <div class="col-12 md:col-3">
           <label>Address Line 1</label>
-          <textarea rows="4" pTextarea autoResize="true" formControlName="addressLine1">
-            </textarea>
+          <textarea
+            rows="5"
+            pTextarea
+            autoResize="true"
+            class="address-textarea"
+            placeholder="Street address, area"
+            formControlName="addressLine1">
+          </textarea>
         </div>
-        
-        <div class="card flex flex-column gap-2 col-12 md:col-3">
+
+        <div class="col-12 md:col-3">
           <label>Address Line 2</label>
-          <textarea rows="4" pTextarea autoResize="true" formControlName="addressLine2">
-            </textarea>
+          <textarea
+            rows="5"
+            pTextarea
+            autoResize="true"
+            class="address-textarea"
+            placeholder="Apt, Suite, Landmark (optional)"
+            formControlName="addressLine2">
+          </textarea>
         </div>
 
       </div>
 
       <!-- Buttons -->
-      <div class="flex justify-content-end gap-2 mt-4">
-        <button
-          pButton
-          type="button"
+        <div class="flex justify-content-end gap-2 mt-4">
+        <button pButton type="button"
           label="Clear"
           icon="pi pi-refresh"
-          class="p-button-sm my-clear-btn"
+          class="p-button-sm my-clear-btn btn-animate"
           (click)="onClear()">
         </button>
 
-        <button
-          pButton
-          type="submit"
+        <button pButton type="submit"
           label="Save"
           icon="pi pi-check"
-          class="p-button-sm my-save-btn">
+          class="p-button-sm my-save-btn btn-animate">
         </button>
       </div>
 
     </div>
 
   </form>
+</p-dialog>
 
+
+<!-- ================= ADD DESIGNATION DIALOG ================= -->
+
+<p-dialog
+  header="Add Designation"
+  [(visible)]="showDesignationDialog"
+  [modal]="true"
+  [style]="{ width: '500px' }"
+  appendTo="body"
+  [baseZIndex]="11000"
+>
+  <form [formGroup]="designationForm" (ngSubmit)="saveDesignation()">
+    <div class="p-fluid">
+
+      <div class="field">
+        <label>Name *</label>
+        <input pInputText formControlName="name" placeholder="Designation name" />
+      </div>
+
+      <div class="field">
+        <label>Identifier Code *</label>
+        <input pInputText formControlName="code" placeholder="Code or short identifier" />
+      </div>
+
+      <div class="field">
+        <label>Description *</label>
+        <input pInputText formControlName="description" placeholder="Short description" />
+      </div>
+
+      <div class="flex justify-content-end gap-2 mt-3">
+        <button pButton type="button"
+          label="Cancel"
+          class="p-button-text"
+          (click)="closeDesignationDialog()">
+        </button>
+
+        <button pButton type="submit" label="Save"></button>
+      </div>
+
+    </div>
+  </form>
+</p-dialog>
+
+
+<!-- ================= ADD EMPLOYEE GROUP DIALOG ================= -->
+
+<p-dialog
+  header="Add Employee Group"
+  [(visible)]="showEmployeeGroupDialog"
+  [modal]="true"
+  [style]="{ width: '500px' }"
+  appendTo="body"
+  [baseZIndex]="11000"
+>
+  <form [formGroup]="employeeGroupForm" (ngSubmit)="saveEmployeeGroup()">
+    <div class="p-fluid">
+
+      <div class="field">
+        <label>Name *</label>
+        <input pInputText formControlName="name" placeholder="Group name" />
+      </div>
+
+      <div class="field">
+        <label>Identifier Code *</label>
+        <input pInputText formControlName="code" placeholder="Code or short identifier" />
+      </div>
+
+      <div class="field">
+        <label>Description *</label>
+        <input pInputText formControlName="description" placeholder="Short description" />
+      </div>
+
+      <div class="flex justify-content-end gap-2 mt-3">
+        <button pButton type="button"
+          label="Cancel"
+          class="p-button-text"
+          (click)="closeEmployeeGroupDialog()">
+        </button>
+
+        <button pButton type="submit" label="Save"></button>
+      </div>
+
+    </div>
+  </form>
 </p-dialog>

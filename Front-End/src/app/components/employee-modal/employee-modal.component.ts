@@ -12,7 +12,10 @@ import {
   FormBuilder,
   FormGroup,
   Validators,
-  ReactiveFormsModule
+  ReactiveFormsModule,
+  AbstractControl,
+  ValidationErrors,
+  ValidatorFn
 } from '@angular/forms';
 
 import { Employee } from '../../models/employee.model';
@@ -136,6 +139,21 @@ export class EmployeeModalComponent implements OnInit {
     private cdr: ChangeDetectorRef
   ) {}
 
+  // ================= VALIDATORS =================
+
+  /**
+   * Validator to ensure field contains only numbers
+   */
+  numericOnly(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value) {
+        return null; // Don't validate empty values
+      }
+      const valid = /^\d+$/.test(control.value);
+      return valid ? null : { numericOnly: true };
+    };
+  }
+
   // ================= INIT =================
 
   ngOnInit(): void {
@@ -176,7 +194,7 @@ export class EmployeeModalComponent implements OnInit {
       lastName: ['', Validators.required],
       gender: ['M', Validators.required],
       dateOfBirth: [null, Validators.required],
-      phone: ['', Validators.required],
+      phone: ['', [Validators.required, this.numericOnly()]],
       noPhone: [false],
       id: [this.employee?.id || this.generateEmployeeId()],
       email: ['', [Validators.required, Validators.email]],
@@ -189,7 +207,7 @@ export class EmployeeModalComponent implements OnInit {
       country: [''],
       state: [''],
       city: [''],
-      zipCode: [''],
+      zipCode: ['', this.numericOnly()],
       age: [25, [Validators.required, Validators.min(18), Validators.max(100)]],
       status: ['Active', Validators.required],
       addressLine1: [''],
@@ -256,24 +274,71 @@ export class EmployeeModalComponent implements OnInit {
   onSubmit(): void {
     if (this.employeeForm.invalid) {
       this.employeeForm.markAllAsTouched();
+      alert('Please fill all required fields correctly');
       return;
     }
 
     const formValue = this.employeeForm.getRawValue();
 
+    // Split form data into three separate objects
+    const personData = {
+      salutation: formValue.salutation,
+      firstName: formValue.firstName,
+      middleName: formValue.middleName,
+      lastName: formValue.lastName,
+      gender: formValue.gender,
+      dob: formValue.dateOfBirth,
+      mobile: formValue.phone,
+      id: formValue.id
+    };
+
+    const personDetailsData = {
+      email: formValue.email,
+      designation: formValue.designation,
+      employeeGroup: formValue.employeeGroup,
+      reportingManager: formValue.reportingManager,
+      department: formValue.department,
+      status: formValue.status,
+      relievingDate: formValue.relievingDate,
+      site: formValue.site
+    };
+
+    const addressData = {
+      country: formValue.country,
+      state: formValue.state,
+      city: formValue.city,
+      zipCode: formValue.zipCode,
+      addressLine1: formValue.addressLine1,
+      addressLine2: formValue.addressLine2
+    };
+
+    // Create the complete request object with nested structure
+    const completeData = {
+      ...personData,
+      personDetails: personDetailsData,
+      address: addressData
+    };
+
+    console.log('Submitting form data:', completeData);
+
     const request = this.isEditMode
-      ? this.employeeService.updateEmployee(formValue)
-      : this.employeeService.addEmployee(formValue);
+      ? this.employeeService.updateEmployee(completeData)
+      : this.employeeService.addEmployee(completeData);
 
     request.subscribe({
-      next: () => {
+      next: (response) => {
+        console.log('Form submitted successfully:', response);
+        alert('Employee saved successfully!');
         this.save.emit();
         this.visible = false;
         this.visibleChange.emit(false);
         this.employeeForm.reset();
         this.cdr.detectChanges();
       },
-      error: (err) => console.error('Operation failed:', err)
+      error: (err) => {
+        console.error('Operation failed:', err);
+        alert('Error saving employee: ' + err.message);
+      }
     });
   }
 

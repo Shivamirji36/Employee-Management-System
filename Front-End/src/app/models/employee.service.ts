@@ -1,114 +1,101 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, finalize } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { tap, catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 import { Employee } from '../models/employee.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EmployeeService {
-  private employees$ = new BehaviorSubject<Employee[]>(this.getMockEmployees());
+  private apiUrl = 'http://localhost:8080/api/employees';
+  private employees$ = new BehaviorSubject<Employee[]>([]);
+  private isLoading = false;
 
-  constructor() { }
+  constructor(private http: HttpClient) {
+    this.loadEmployees();
+  }
+
+  loadEmployees(): void {
+    // Prevent multiple simultaneous requests
+    if (this.isLoading) {
+      return;
+    }
+
+    this.isLoading = true;
+    this.http.get<Employee[]>(this.apiUrl).pipe(
+      finalize(() => {
+        this.isLoading = false;
+      })
+    ).subscribe(
+      (data) => {
+        console.log('Employees loaded from backend:', data);
+        this.employees$.next(data);
+      },
+      (error) => {
+        console.error('Error loading employees:', error);
+        this.employees$.next([]);
+      }
+    );
+  }
 
   getEmployees(): Observable<Employee[]> {
     return this.employees$.asObservable();
   }
 
-  addEmployee(employee: Employee): void {
-    const current = this.employees$.value;
-    this.employees$.next([...current, employee]);
+  addEmployee(employee: Employee): Observable<Employee> {
+    console.log('Sending POST request with data:', employee);
+    return this.http.post<Employee>(this.apiUrl, employee).pipe(
+      tap((response) => {
+        console.log('Employee created successfully:', response);
+        // Reload the employee list after a small delay to ensure backend is updated
+        setTimeout(() => this.loadEmployees(), 500);
+      }),
+      catchError((error) => {
+        console.error('Error creating employee:', error);
+        throw error;
+      })
+    );
   }
 
-  updateEmployee(employee: Employee): void {
-    const current = this.employees$.value;
-    const index = current.findIndex(e => e.id === employee.id);
-    if (index !== -1) {
-      current[index] = employee;
-      this.employees$.next([...current]);
-    }
+  updateEmployee(employee: Employee): Observable<Employee> {
+    console.log('Sending PUT request with data:', employee);
+    const url = `${this.apiUrl}/${employee.id}`;
+    return this.http.put<Employee>(url, employee).pipe(
+      tap((response) => {
+        console.log('Employee updated successfully:', response);
+        // Reload the employee list after a small delay to ensure backend is updated
+        setTimeout(() => this.loadEmployees(), 500);
+      }),
+      catchError((error) => {
+        console.error('Error updating employee:', error);
+        throw error;
+      })
+    );
   }
 
-  deleteEmployee(id: string): void {
-    const current = this.employees$.value;
-    this.employees$.next(current.filter(e => e.id !== id));
+  deleteEmployee(id: string): Observable<any> {
+    console.log('Sending DELETE request for id:', id);
+    const url = `${this.apiUrl}/${id}`;
+    return this.http.delete(url).pipe(
+      tap((response) => {
+        console.log('Employee deleted successfully:', response);
+        // Reload the employee list after a small delay to ensure backend is updated
+        setTimeout(() => this.loadEmployees(), 500);
+      }),
+      catchError((error) => {
+        console.error('Error deleting employee:', error);
+        throw error;
+      })
+    );
   }
 
-  activateEmployee(id: string): void {
-    this.updateEmployeeStatus(id, 'Active');
+  activateEmployee(id: string): Observable<any> {
+    return this.deleteEmployee(id);
   }
 
-  deactivateEmployee(id: string): void {
-    this.updateEmployeeStatus(id, 'Inactive');
-  }
-
-  private updateEmployeeStatus(id: string, status: 'Active' | 'Inactive'): void {
-    const current = this.employees$.value;
-    const index = current.findIndex(e => e.id === id);
-    if (index !== -1) {
-      current[index].status = status;
-      this.employees$.next([...current]);
-    }
-  }
-
-  // Mock data for testing - replace with HTTP calls later
-  private getMockEmployees(): Employee[] {
-    return [
-      {
-        id: 'Rajdip-1',
-        name: 'Mr. Rajdip1 S',
-        email: 'rajdip1@gmail.com',
-        phone: '2004033333',
-        gender: 'M',
-        age: 65,
-        dateOfBirth: '10-12-1960',
-        employeeGroup: 'Physician',
-        designation: 'Specialist',
-        department: 'Internal Medicines',
-        reportingManager: '',
-        status: 'Active'
-      },
-      {
-        id: 'Rajdip-2',
-        name: 'Mr. Rajdip2 S',
-        email: 'rajdip2@gmail.com',
-        phone: '2004033334',
-        gender: 'F',
-        age: 62,
-        dateOfBirth: '15-03-1963',
-        employeeGroup: 'Physician',
-        designation: 'Specialist',
-        department: 'Internal Medicines',
-        reportingManager: '',
-        status: 'Active'
-      },
-      {
-        id: 'Rajdip-3',
-        name: 'Mr. Rajdip3 S',
-        email: 'rajdip3@gmail.com',
-        phone: '2004033335',
-        gender: 'M',
-        age: 58,
-        dateOfBirth: '20-06-1967',
-        employeeGroup: 'Physician',
-        designation: 'Specialist',
-        department: 'Internal Medicines',
-        reportingManager: '',
-        status: 'Inactive'
-      },
-      {
-        id: 'Rajdip-10',
-        name: 'Mr. Rajdip10 S',
-        email: 'rajdip10@gmail.com',
-        phone: '2004033342',
-        gender: 'F',
-        age: 65,
-        dateOfBirth: '10-12-1960',
-        employeeGroup: 'Physician',
-        designation: 'Specialist',
-        department: 'Internal Medicines',
-        reportingManager: '',
-        status: 'Active'
-      }
-    ];
+  deactivateEmployee(id: string): Observable<any> {
+    return this.deleteEmployee(id);
   }
 }

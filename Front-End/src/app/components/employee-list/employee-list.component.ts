@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { Employee } from '../../models/employee.model';
@@ -21,7 +21,8 @@ import { TagModule } from 'primeng/tag';
     TagModule
   ],
   templateUrl: './employee-list.component.html',
-  styleUrls: ['./employee-list.component.css']
+  styleUrls: ['./employee-list.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EmployeeListComponent implements OnInit {
 
@@ -44,6 +45,7 @@ export class EmployeeListComponent implements OnInit {
     this.employeeService.getEmployees().subscribe(
       (data: Employee[]) => {
         this.employees = data;
+        this.cdr.markForCheck();
       }
     );
   }
@@ -55,7 +57,7 @@ export class EmployeeListComponent implements OnInit {
     if (this.empModal) {
       this.empModal.visible = true;
       this.empModal.visibleChange.emit(true);
-      this.cdr.detectChanges();
+      this.cdr.markForCheck();
     }
   }
 
@@ -63,10 +65,12 @@ export class EmployeeListComponent implements OnInit {
     this.isEditMode = true;
     this.selectedEmployee = { ...employee };
     this.showModal = true;
+    this.cdr.markForCheck();
   }
 
   closeModal(): void {
     this.showModal = false;
+    this.cdr.markForCheck();
   }
 
   getStatusSeverity(status: string): 'success' | 'danger' {
