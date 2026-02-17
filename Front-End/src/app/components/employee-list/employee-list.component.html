@@ -1,27 +1,21 @@
 <div class="p-4">
 
-
   <div class="header-container">
 
     <div class="left-section">
       <h2>Manage Employee</h2>
-      <small id="employee-info">
-        View and Manage Employee Information
-      </small>
+      <small>View and Manage Employee Information</small>
     </div>
 
     <div class="right-section">
       <button
-      type="button"
-        id="add-employee-btn"
-        class="add-btn"
+        pButton
+        label="+ Add Employee"
         (click)="openAddModal()">
-        + Add Employee
       </button>
     </div>
 
   </div>
-
 
   <p-table
     [value]="employees"
@@ -31,18 +25,17 @@
     showGridlines
     responsiveLayout="scroll">
 
-
     <ng-template pTemplate="header">
-      <tr class="table-header">
-        <th>Employee</th>
-        <th>Gender/Age</th>
-        <th>Employee ID</th>
-        <th>Group</th>
-        <th>Designation</th>
-        <th>Department</th>
-        <th>Reporting Manager</th>
-        <th>Status</th>
-        <th></th>
+      <tr>
+        <th class="action-btn">Employee</th>
+        <th class="action-btn">Gender/Age</th>
+        <th class="action-btn">Employee ID</th>
+        <th class="action-btn">Group</th>
+        <th class="action-btn">Designation</th>
+        <th class="action-btn">Department</th>
+        <th class="action-btn">Reporting Manager</th>
+        <th class="action-btn">Status</th>
+        <th class="action-btn"></th>
       </tr>
     </ng-template>
 
@@ -51,45 +44,55 @@
 
         <td>
           <div class="flex flex-column">
-            <strong>{{ employee.name }}</strong>
-            <small>{{ employee.email }}</small>
-            <small>{{ employee.phone }}</small>
+            <strong>
+              {{ employee.firstName }} {{ employee.lastName }}
+            </strong>
+            <small>{{ employee.personDetails?.email }}</small>
+            <small>{{ employee.mobile }}</small>
           </div>
         </td>
 
         <td>
-          {{ employee.gender }} / {{ employee.age }}
+          {{ employee.gender }}
+          <ng-container *ngIf="employee.age">
+            / {{ employee.age }}
+          </ng-container>
         </td>
 
-        <td>{{ employee.id }}</td>
-        <td>{{ employee.employeeGroup }}</td>
-        <td>{{ employee.designation }}</td>
-        <td>{{ employee.department }}</td>
-        <td>{{ employee.reportingManager || '-' }}</td>
+
+        <td>{{ employee.employeeId }}</td>
+        <td>{{ employee.personDetails?.employeeGroup }}</td>
+        <td>{{ employee.personDetails?.designation }}</td>
+        <td>{{ employee.personDetails?.department }}</td>
+        <td>{{ employee.personDetails?.reportingManager || '-' }}</td>
 
         <td>
           <p-tag
-            [value]="employee.status"
-            [severity]="getStatusSeverity(employee.status)">
+            [value]="employee.personDetails?.status"
+            [severity]="getStatusSeverity(employee.personDetails?.status)">
           </p-tag>
         </td>
 
-        <td>
-          <button
-            pButton
-            icon="pi pi-pencil"
-            text
-            (click)="openEditModal(employee)">
-          </button>
-        </td>
+        <td class="action-cell">
+
+        <p-menu #menu [popup]="true" [model]="getMenuItems(employee)" appendTo="body">
+        </p-menu>
+
+
+        
+        <button pButton icon="pi pi-ellipsis-v" type="button" class="action-btn" (click)="menu.toggle($event)">
+        </button>
+
 
       </tr>
     </ng-template>
 
   </p-table>
 
+  <!-- EMPLOYEE MODAL -->
   <app-employee-modal
     #empModal
+    [(visible)]="showModal"
     [employee]="selectedEmployee"
     [isEditMode]="isEditMode"
     (save)="onEmployeeSaved()">

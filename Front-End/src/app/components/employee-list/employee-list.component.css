@@ -41,6 +41,29 @@
   background-color: #1b5e20;
 }
 
+.action-cell {
+  text-align: center;
+  position: relative;
+}
+
+.action-btn {
+  background-color: rgb(0, 121, 107);
+  color: white;
+}
+
+::ng-deep .p-menu {
+  border: 1px solid rgb(0, 121, 107);
+}
+
+::ng-deep .p-menu .p-menuitem-link {
+  color: rgb(0, 121, 107);
+}
+
+::ng-deep .p-menu .p-menuitem-link:hover {
+  background-color: rgba(0, 121, 107, 0.1);
+}
+
+
 
 
 

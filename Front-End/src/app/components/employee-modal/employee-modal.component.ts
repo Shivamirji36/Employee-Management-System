@@ -29,6 +29,8 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
 import { CheckboxModule } from 'primeng/checkbox';
+import { OnChanges, SimpleChanges } from '@angular/core';
+
 
 @Component({
   selector: 'app-employee-modal',
@@ -46,7 +48,7 @@ import { CheckboxModule } from 'primeng/checkbox';
   ],
   templateUrl: './employee-modal.component.html'
 })
-export class EmployeeModalComponent implements OnInit {
+export class EmployeeModalComponent implements OnInit, OnChanges {
 
   @Input() employee: Employee | null = null;
   @Input() isEditMode = false;
@@ -62,7 +64,29 @@ export class EmployeeModalComponent implements OnInit {
   showDesignationDialog = false;
   showEmployeeGroupDialog = false;
 
-  // ================= OPTIONS =================
+  ngOnChanges(changes: SimpleChanges): void {
+    // If the form exists, handle incoming changes safely
+    if (this.employeeForm) {
+      if (changes['isEditMode']) {
+        const idControl = this.employeeForm.get('id');
+        if (this.isEditMode) {
+          idControl?.disable({ emitEvent: false });
+        } else {
+          idControl?.enable({ emitEvent: false });
+        }
+      }
+
+      if (changes['employee'] && this.employee) {
+        // Patch values from employee and nested objects
+        this.employeeForm.patchValue({
+          ...this.employee,
+          ...this.employee.personDetails,
+          ...this.employee.address
+        });
+      }
+    }
+  }
+
 
   genderOptions = [
     { label: 'Male', value: 'M' },
@@ -196,7 +220,7 @@ export class EmployeeModalComponent implements OnInit {
       dateOfBirth: [null, Validators.required],
       phone: ['', [Validators.required, this.numericOnly()]],
       noPhone: [false],
-      id: [this.employee?.id || this.generateEmployeeId()],
+  id: [{ value: this.employee?.id || this.generateEmployeeId(), disabled: this.isEditMode }],
       email: ['', [Validators.required, Validators.email]],
       designation: ['', Validators.required],
       employeeGroup: [''],
@@ -231,9 +255,8 @@ export class EmployeeModalComponent implements OnInit {
       phoneControl?.updateValueAndValidity();
     });
 
-    if (this.isEditMode) {
-      this.employeeForm.get('id')?.disable();
-    }
+    // id control is created with disabled state when in edit mode to avoid
+    // ExpressionChangedAfterItHasBeenCheckedError as recommended by Angular.
   }
 
   initializeDesignationForm(): void {
