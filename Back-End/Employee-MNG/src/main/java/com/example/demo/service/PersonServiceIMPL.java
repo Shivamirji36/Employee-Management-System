@@ -24,11 +24,11 @@ public class PersonServiceIMPL implements PersonService {
 
         Person person = new Person();
 
-        // 🔥 Generate employeeId if not provided
-        if (dto.employeeId == null || ((String) dto.employeeId).isEmpty()) {
-            person.setEmployeeId(generateEmployeeId());
+        // Set employee ID from DTO
+        if (dto.id != null && !dto.id.isEmpty()) {
+            person.setEmployeeId(dto.id);
         } else {
-            person.setEmployeeId(dto.employeeId);
+            person.setEmployeeId(generateEmployeeId());
         }
 
         mapDtoToEntity(dto, person);

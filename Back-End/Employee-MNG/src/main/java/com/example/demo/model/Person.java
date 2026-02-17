@@ -1,6 +1,7 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.time.LocalDate;
 
 @Entity
@@ -21,9 +22,11 @@ public class Person {
     private String mobile;
 
     @OneToOne(mappedBy = "person", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private PersonDetails personDetails;
 
     @OneToOne(mappedBy = "person", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private Address address;
     
     //Getters and Setters

@@ -7,6 +7,7 @@ import com.example.demo.model.PersonDetails;
 
 public class PersonRequestDTO {
 
+	public String id;
 	public String salutation;
     public String firstName;
     public String middleName;
@@ -17,5 +18,4 @@ public class PersonRequestDTO {
 
     public PersonDetails personDetails;
     public Address address;
-    public Object employeeId;
 }

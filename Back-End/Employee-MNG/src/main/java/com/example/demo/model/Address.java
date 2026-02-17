@@ -1,6 +1,7 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table (name = "address")
@@ -13,12 +14,13 @@ public class Address {
     private String country;
     private String state;
     private String city;
-    private String zipcode;
+    private String zipCode;
     private String addressLine1;
     private String addressLine2;
 
     @OneToOne
     @JoinColumn(name = "employee_id")
+    @JsonBackReference
     private Person person;
     
     //Getters and Setters
@@ -55,12 +57,12 @@ public class Address {
 		this.city = city;
 	}
 
-	public String getZipcode() {
-		return zipcode;
+	public String getZipCode() {
+		return zipCode;
 	}
 
-	public void setZipcode(String zipcode) {
-		this.zipcode = zipcode;
+	public void setZipCode(String zipCode) {
+		this.zipCode = zipCode;
 	}
 
 	public String getAddressLine1() {

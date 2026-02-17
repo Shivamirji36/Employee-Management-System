@@ -1,6 +1,7 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import java.time.LocalDate;
 
 @Entity
@@ -12,17 +13,18 @@ public class PersonDetails {
 	 @GeneratedValue(strategy = GenerationType.IDENTITY)
 	 private Long id;
 
-	 private String emailId;
+	 private String email;
 	 private String designation;
 	 private String employeeGroup;
 	 private String reportingManager;
 	 private String department;
 	 private String status;
 	 private LocalDate relievingDate;
-	 private String defaultStatus;
+	 private String site;
 
 	 @OneToOne
 	 @JoinColumn(name = "employee_id")
+	 @JsonBackReference
 	 private Person person;
 	 
 	 //Getters and Setters
@@ -35,12 +37,12 @@ public class PersonDetails {
 		this.id = id;
 	}
 
-	public String getEmailId() {
-		return emailId;
+	public String getEmail() {
+		return email;
 	}
 
-	public void setEmailId(String emailId) {
-		this.emailId = emailId;
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public String getDesignation() {
@@ -91,12 +93,12 @@ public class PersonDetails {
 		this.relievingDate = relievingDate;
 	}
 
-	public String getDefaultStatus() {
-		return defaultStatus;
+	public String getSite() {
+		return site;
 	}
 
-	public void setDefaultStatus(String defaultStatus) {
-		this.defaultStatus = defaultStatus;
+	public void setSite(String site) {
+		this.site = site;
 	}
 
 	public Person getPerson() {
