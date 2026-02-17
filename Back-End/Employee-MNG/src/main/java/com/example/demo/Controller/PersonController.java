@@ -19,25 +19,21 @@ public class PersonController {
         this.personService = personService;
     }
 
-    // ================= CREATE =================
     @PostMapping
     public Person createEmployee(@RequestBody PersonRequestDTO dto) {
         return personService.savePerson(dto);
     }
 
-    // ================= GET ALL =================
     @GetMapping
     public List<Person> getAllEmployees() {
         return personService.getAllEmployees();
     }
 
-    // ================= GET BY ID =================
     @GetMapping("/{employeeId}")
     public Person getEmployeeById(@PathVariable String employeeId) {
         return personService.getEmployeeById(employeeId);
     }
 
-    // ================= UPDATE =================
     @PutMapping("/{employeeId}")
     public Person updateEmployee(
             @PathVariable String employeeId,
@@ -45,7 +41,6 @@ public class PersonController {
         return personService.updateEmployee(employeeId, dto);
     }
 
-    // ================= DELETE =================
     @DeleteMapping("/{employeeId}")
     public void deleteEmployee(@PathVariable String employeeId) {
         personService.deleteEmployee(employeeId);
