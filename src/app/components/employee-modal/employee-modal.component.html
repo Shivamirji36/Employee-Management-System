@@ -1,0 +1,306 @@
+<p-dialog
+  [(visible)]="visible"
+  [modal]="true"
+  [closable]="true"
+  [style]="{ width: '1000px' }"
+  [draggable]="false"
+  (onHide)="handleHide()"
+  [header]="isEditMode ? 'Edit Employee' : 'Add New Employee'">
+
+  <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()">
+
+    <!-- Custom backdrop for child dialogs: dim the background when a child add-dialog is open -->
+    <div *ngIf="showDesignationDialog || showEmployeeGroupDialog" class="custom-backdrop"></div>
+
+    <div class="p-fluid">
+
+      <!-- Row 1 -->
+      <div class="grid">
+
+        <div class="col-12 md:col-3">
+          <label>Salutation <span class="text-red-500">*</span></label>
+          <p-select
+            class="w-full"
+            [options]="salutationOptions"
+            formControlName="salutation"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Select"
+            [filter]="true" 
+            filterBy="label"
+            filterPlaceholder="Search by salutation">
+          </p-select>
+        </div>
+
+        <div class="col-12 md:col-3">
+          <label>First Name <span class="text-red-500">*</span></label>
+          <input pInputText class="w-full" formControlName="firstName" />
+        </div>
+
+        <div class="col-12 md:col-3">
+          <label>Middle Name</label>
+          <input pInputText class="w-full" formControlName="middleName" />
+        </div>
+
+        <div class="col-12 md:col-3">
+          <label>Last Name <span class="text-red-500">*</span></label>
+          <input pInputText class="w-full" formControlName="lastName" />
+        </div>
+
+      </div>
+
+      <!-- Row 2 -->
+      <div class="grid">
+
+        <div class="col-12 md:col-3">
+          <label>Gender <span class="text-red-500">*</span></label>
+          <p-select
+            class="w-full"
+            [options]="genderOptions"
+            formControlName="gender"
+            optionLabel="label"
+            optionValue="value">
+          </p-select>
+        </div>
+
+        <div class="flex-auto">
+          <label class="block mt-2"> DOB </label>                     
+          <p-datepicker class="w-full" formControlName="dateOfBirth" [iconDisplay]="'input'" [showIcon]="true" inputId="icondisplay" />
+        </div>
+
+        <div class="col-12 md:col-3 mt-0">
+          <div class="flex align-items-center gap-1 mb-1 mt-0">
+            <p-checkbox formControlName="noPhone" binary="true" class="small-checkbox">
+            </p-checkbox>
+            <label>No Phone</label>
+          </div>
+          <input placeholder="Mobile" pInputText class="w-full" formControlName="phone" />
+          </div>
+
+        <div class="col-12 md:col-3">
+          <label>Employee ID</label>
+          <input pInputText class="w-full" formControlName="id" />
+        </div>
+
+      </div>
+
+      <h4>Person Details</h4>
+
+      <!-- Row 3 -->
+      <div class="grid">
+
+        <div class="col-12 md:col-3">
+          <label>Email <span class="text-red-500">*</span></label>
+          <input pInputText type="email" class="w-full" formControlName="email" />
+        </div>
+
+        <div class="col-12 md:col-3">
+          <label>
+            Designation
+          </label>
+        <div class="flex gap-2 items-center">
+          <p-select class="w-full" [options]="designationOptions" formControlName="designation" optionLabel="label"
+            optionValue="value" placeholder="Select" [filter]="true" filterBy="label" filterPlaceholder="Search by designation">
+          </p-select>
+          <p-button icon="pi pi-plus" [rounded]="true" [text]="true" [raised]="true" (click)="openDesignationDialog()" />
+        </div>
+        </div>
+
+        <div class="col-12 md:col-3">
+          <label>
+            Employee Group
+          </label>
+          <div class="flex gap-2 items-center">
+            <p-select class="w-full" [options]="employeeOptions" formControlName="employeeGroup" optionLabel="label"
+              optionValue="value" placeholder="Select" [filter]="true" filterBy="label"
+              filterPlaceholder="Search by employee group">
+            </p-select>
+            <p-button icon="pi pi-plus" [rounded]="true" [text]="true" [raised]="true" (click)="openEmployeeGroupDialog()" />
+          </div>
+        </div>
+
+        <div class="col-12 md:col-3">
+          <label>Reporting Manager</label>
+          <input pInputText class="w-full" formControlName="reportingManager" />
+        </div>
+
+      </div>
+
+      <!-- Row 5 -->
+      <div class="grid">
+        <div class="col-12 md:col-3">
+          <label>
+            Employee Department <span class="text-red-500">*</span>
+          </label>
+            <p-select class="w-full" [options]="employeeDepOptions" formControlName="department" optionLabel="label"
+              optionValue="value" placeholder="Select" [filter]="true" filterBy="label"
+              filterPlaceholder="Search by department">
+            </p-select>
+        </div>
+
+        <div class="col-12 md:col-3">
+          <label>
+            Status
+          </label>
+            <p-select class="w-full" [options]="statusOptions" formControlName="status" optionLabel="label"
+              optionValue="value" placeholder="Select" [filter]="true" filterBy="label"
+              filterPlaceholder="Search by status">
+            </p-select>
+        </div>
+
+        <div class="col-12 md:col-3">
+          <label class="block"> Relieving Date </label>
+          <p-datepicker [disabled]="true" class="w-full" formControlName="relievingDate" [iconDisplay]="'input'" [showIcon]="true" inputId="icondisplay" />
+        </div>
+
+        <div class="col-12 md:col-3">
+          <label>
+            Default Site <span class="text-red-500">*</span>
+          </label>
+            <p-select class="w-full" [options]="employeeSiteOptions" formControlName="site" optionLabel="label"
+              optionValue="value" placeholder="Select" [filter]="true" filterBy="label"
+              filterPlaceholder="Search by site">
+            </p-select>
+        </div>
+
+      </div>
+
+
+      <h4>Primary Address</h4>
+
+      <div class="grid">
+
+        <div class="col-12 md:col-3">
+          <label>
+            Country
+          </label>
+        <div class="flex gap-2 items-center">
+          <p-select class="w-full" [options]="countryOptions" formControlName="country" optionLabel="label"
+            optionValue="value" placeholder="Select" [filter]="true" filterBy="label" filterPlaceholder="Search by country">
+          </p-select>
+        </div>
+        </div>
+
+        <div class="col-12 md:col-3">
+          <label>
+            State
+          </label>
+        <div class="flex gap-2 items-center">
+          <p-select class="w-full" [options]="stateOptions" formControlName="state" optionLabel="label"
+            optionValue="value" [editable]="true" placeholder="Select">
+          </p-select>
+        </div>
+        </div>
+
+        <div class="col-12 md:col-3">
+          <label>
+            City
+          </label>
+          <div class="flex gap-2 items-center">
+            <p-select class="w-full" [editable]="true" [options]="cityOptions" formControlName="city" optionLabel="label"
+              optionValue="value" placeholder="Select">
+            </p-select>
+          </div>
+        </div>
+
+        <div class="col-12 md:col-3">
+          <label>Zip Code</label>
+          <input pInputText class="w-full" formControlName="zipCode" />
+        </div>
+
+      </div>
+
+      <div class="grid">
+        <div class="card flex flex-column gap-2 col-12 md:col-3">
+            <label>Address Line 1</label>
+            <textarea rows="5" cols="30" pTextarea autoResize="true"></textarea>
+        </div>
+
+        <div class="card flex flex-column gap-2 col-12 md:col-3">
+            <label>Address Line 2</label>
+            <textarea rows="5" cols="30" pTextarea autoResize="true"></textarea>
+        </div>
+
+        <div class="flex justify-content-end gap-3 w-full">
+
+        <button pButton type="button" label="Clear" icon="pi pi-refresh" class="my-clear-btn" (click)="onClear()">
+        </button>
+
+        <button pButton type="submit" label="Save" icon="pi pi-check" class="my-save-btn">
+        </button>
+    
+      </div>
+      </div>
+
+    </div>
+    
+
+  <!-- Add Designation Dialog -->
+  <p-dialog header="Add Designation" [(visible)]="showDesignationDialog" [modal]="false" appendTo="body" [baseZIndex]="11001" [style]="{ width: '500px' }" (onHide)="closeDesignationDialog()">
+    <form [formGroup]="designationForm" (ngSubmit)="saveDesignation()">
+      <div class="p-fluid">
+        <div class="field">
+          <label for="designationName">Name <span class="text-red-500">*</span></label>
+          <input id="designationName" pInputText formControlName="name" />
+          <small *ngIf="designationForm.get('name')?.touched && designationForm.get('name')?.invalid" class="p-error">Name is required</small>
+        </div>
+
+        <div class="field">
+          <label for="designationCode">Identifier Code <span class="text-red-500">*</span></label>
+          <input id="designationCode" pInputText formControlName="code" />
+          <small *ngIf="designationForm.get('code')?.touched && designationForm.get('code')?.invalid" class="p-error">Code is required</small>
+        </div>
+
+        <div class="field">
+          <label for="designationDescription">Description <span class="text-red-500">*</span></label>
+          <input id="designationDescription" pInputText formControlName="description" />
+          <small *ngIf="designationForm.get('description')?.touched && designationForm.get('description')?.invalid" class="p-error">Description is required</small>
+        </div>
+
+        <div class="flex justify-content-end gap-2 mt-3">
+          <button pButton type="button" label="Cancel" class="p-button-text" (click)="closeDesignationDialog()"></button>
+          <button pButton type="submit" label="Save" class="my-save-btn"></button>
+        </div>
+      </div>
+    </form>
+  </p-dialog>
+
+  <!-- Add Employee Group Dialog -->
+  <p-dialog header="Add Employee Group" [(visible)]="showEmployeeGroupDialog" [modal]="false" appendTo="body" [baseZIndex]="11001" [style]="{ width: '500px' }" (onHide)="closeEmployeeGroupDialog()">
+    <form [formGroup]="employeeGroupForm" (ngSubmit)="saveEmployeeGroup()">
+      <div class="p-fluid">
+        <div class="field">
+          <label for="groupName">Name <span class="text-red-500">*</span></label>
+          <input id="groupName" pInputText formControlName="name" />
+          <small *ngIf="employeeGroupForm.get('name')?.touched && employeeGroupForm.get('name')?.invalid" class="p-error">Name is required</small>
+        </div>
+
+        <div class="field">
+          <label for="groupCode">Identifier Code <span class="text-red-500">*</span></label>
+          <input id="groupCode" pInputText formControlName="code" />
+          <small *ngIf="employeeGroupForm.get('code')?.touched && employeeGroupForm.get('code')?.invalid" class="p-error">Code is required</small>
+        </div>
+
+        <div class="field">
+          <label for="groupDescription">Description <span class="text-red-500">*</span></label>
+          <input id="groupDescription" pInputText formControlName="description" />
+          <small *ngIf="employeeGroupForm.get('description')?.touched && employeeGroupForm.get('description')?.invalid" class="p-error">Description is required</small>
+        </div>
+
+        <div class="flex justify-content-end gap-2 mt-3">
+          <button pButton type="button" label="Cancel" class="p-button-text" (click)="closeEmployeeGroupDialog()"></button>
+          <button pButton type="submit" label="Save" class="my-save-btn"></button>
+        </div>
+      </div>
+    </form>
+  </p-dialog>
+
+    <ng-template pTemplate="footer">
+    
+      
+    
+    </ng-template>
+
+
+  </form>
+</p-dialog>

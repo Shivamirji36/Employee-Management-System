@@ -1,0 +1,107 @@
+/* You can add global styles to this file, and also import other style files */
+@import "primeflex/primeflex.css";
+
+/* Global overrides for dialog buttons (PrimeNG Dialog is rendered in an overlay outside component DOM) */
+.p-dialog .my-clear-btn {
+	background-color: rgba(251, 192, 45, 0.76) !important;
+	color: #000 !important;
+	border: none !important;
+}
+
+.p-dialog .my-save-btn {
+	background-color: rgb(0, 150, 136) !important;
+	color: #fff !important;
+	border: none !important;
+}
+
+/* Make PrimeNG dropdown options display horizontally and in smaller size */
+/* PrimeNG dropdown panel is rendered in the global overlay, so rules go in global styles */
+.p-dropdown-panel .p-dropdown-items {
+	display: flex !important;
+	flex-wrap: wrap !important;
+	gap: 0.5rem !important;
+	padding: 0.4rem !important;
+}
+
+.p-dropdown-panel .p-dropdown-item {
+	display: inline-flex !important;
+	align-items: center !important;
+	padding: 0.25rem 0.5rem !important;
+	margin: 0 !important;
+	font-size: 0.85rem !important;
+	border-radius: 4px !important;
+	cursor: pointer !important;
+}
+
+.p-dropdown-panel .p-dropdown-item:hover {
+	background: rgba(0,0,0,0.05) !important;
+}
+
+/* Make the dropdown input/label more compact */
+.p-dropdown .p-dropdown-label,
+.p-dropdown .p-dropdown-trigger {
+	font-size: 0.9rem !important;
+	padding-top: 0.25rem !important;
+	padding-bottom: 0.25rem !important;
+}
+
+/* If using p-select (which renders a p-dropdown), ensure the overall control height is smaller */
+.p-dropdown {
+	--pf-size: 0.9rem;
+}
+
+/* Additional selectors to cover PrimeNG select variants and ensure horizontal flow */
+.p-dropdown-panel .p-dropdown-items li,
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item,
+.p-selectpanel .p-selectitem,
+.p-selectpanel .p-selectitem .p-selectitem-label,
+.p-multiselect .p-multiselect-item {
+	display: inline-block !important;
+	white-space: nowrap !important;
+	margin-right: 0.5rem !important;
+	margin-bottom: 0.4rem !important;
+	padding: 0.2rem 0.5rem !important;
+	font-size: 0.85rem !important;
+}
+
+/* Make sure panel container doesn't force vertical list layout */
+.p-dropdown-panel, .p-selectpanel, .p-multiselect-panel {
+	max-height: 150px; /* keep a reasonable panel height and allow wrapping */
+}
+
+/* Broader overlay fallbacks to catch other PrimeNG versions/variants */
+.p-overlaypanel .p-dropdown-items,
+.p-overlaypanel .p-selectpanel .p-selectitem,
+.p-overlaypanel .p-multiselect-item,
+.p-overlaypanel .p-dropdown-item,
+.p-overlaypanel .p-selectitem {
+	display: inline-flex !important;
+	flex-wrap: wrap !important;
+	gap: 0.4rem !important;
+	align-items: center !important;
+	padding: 0 !important;
+	font-size: 0.85rem !important;
+}
+
+/* Smaller chips look for selected items inside multiselect/dropdown panels */
+.p-chip, .p-tag, .p-multiselect-token {
+	font-size: 0.82rem !important;
+	padding: 0.15rem 0.4rem !important;
+}
+
+/* If the overlay still renders a list element, make li inline */
+.p-dropdown-panel li,
+.p-selectpanel li,
+.p-overlaypanel li {
+	display: inline-block !important;
+	margin-right: 0.4rem !important;
+	margin-bottom: 0.3rem !important;
+}
+
+/* Custom backdrop used by employee-modal component when child add-dialogs are open */
+.custom-backdrop {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.22);
+	z-index: 11000; /* sits above the parent dialog but below child dialogs which use baseZIndex 11001 */
+}   

@@ -1,0 +1,98 @@
+<div class="p-4">
+
+
+  <div class="header-container">
+
+    <div class="left-section">
+      <h2>Manage Employee</h2>
+      <small id="employee-info">
+        View and Manage Employee Information
+      </small>
+    </div>
+
+    <div class="right-section">
+      <button
+      type="button"
+        id="add-employee-btn"
+        class="add-btn"
+        (click)="openAddModal()">
+        + Add Employee
+      </button>
+    </div>
+
+  </div>
+
+
+  <p-table
+    [value]="employees"
+    [paginator]="true"
+    [rows]="5"
+    stripedRows
+    showGridlines
+    responsiveLayout="scroll">
+
+
+    <ng-template pTemplate="header">
+      <tr class="table-header">
+        <th>Employee</th>
+        <th>Gender/Age</th>
+        <th>Employee ID</th>
+        <th>Group</th>
+        <th>Designation</th>
+        <th>Department</th>
+        <th>Reporting Manager</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-employee>
+      <tr>
+
+        <td>
+          <div class="flex flex-column">
+            <strong>{{ employee.name }}</strong>
+            <small>{{ employee.email }}</small>
+            <small>{{ employee.phone }}</small>
+          </div>
+        </td>
+
+        <td>
+          {{ employee.gender }} / {{ employee.age }}
+        </td>
+
+        <td>{{ employee.id }}</td>
+        <td>{{ employee.employeeGroup }}</td>
+        <td>{{ employee.designation }}</td>
+        <td>{{ employee.department }}</td>
+        <td>{{ employee.reportingManager || '-' }}</td>
+
+        <td>
+          <p-tag
+            [value]="employee.status"
+            [severity]="getStatusSeverity(employee.status)">
+          </p-tag>
+        </td>
+
+        <td>
+          <button
+            pButton
+            icon="pi pi-pencil"
+            text
+            (click)="openEditModal(employee)">
+          </button>
+        </td>
+
+      </tr>
+    </ng-template>
+
+  </p-table>
+
+  <app-employee-modal
+    #empModal
+    [employee]="selectedEmployee"
+    [isEditMode]="isEditMode"
+    (save)="onEmployeeSaved()">
+  </app-employee-modal>
+
+</div>

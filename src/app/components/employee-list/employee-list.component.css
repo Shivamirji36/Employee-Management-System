@@ -1,0 +1,49 @@
+.header-container {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.left-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.right-section {
+  display: flex;
+  align-items: center;
+}
+
+.right-section button{
+  background-color: rgb(104, 159, 56);
+  border: none;
+}
+
+.table-header th {
+  background-color: rgb(0, 121, 107);
+  color: white;
+}
+
+.add-btn {
+  background-color: #2e7d32;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  font-size: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.add-btn:hover {
+  background-color: #1b5e20;
+}
+
+
+
+
+           
+
+
