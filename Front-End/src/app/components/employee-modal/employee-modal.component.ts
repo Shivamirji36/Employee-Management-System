@@ -1,7 +1,19 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  ChangeDetectorRef
+} from '@angular/core';
 
+import { CommonModule } from '@angular/common';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule
+} from '@angular/forms';
 
 import { Employee } from '../../models/employee.model';
 import { EmployeeService } from '../../services/employee.service';
@@ -41,12 +53,13 @@ export class EmployeeModalComponent implements OnInit {
   @Output() visibleChange = new EventEmitter<boolean>();
 
   employeeForm!: FormGroup;
-  // Designation add dialog
-  showDesignationDialog = false;
   designationForm!: FormGroup;
-  // Employee group add dialog
-  showEmployeeGroupDialog = false;
   employeeGroupForm!: FormGroup;
+
+  showDesignationDialog = false;
+  showEmployeeGroupDialog = false;
+
+  // ================= OPTIONS =================
 
   genderOptions = [
     { label: 'Male', value: 'M' },
@@ -71,135 +84,89 @@ export class EmployeeModalComponent implements OnInit {
   ];
 
   designationOptions = [
-    { label: 'developer', value: 'Developer' },
-    { label: 'diet specialist', value: 'Diet Specialist' },
-    { label: 'Front desk executive', value: 'Front desk executive' },
-    { label: 'IT manager', value: 'IT Manager' },
-    { label: 'Lab technician', value: 'Lab technician' },
-    { label: 'Nurse', value: 'Nurse' },
+    { label: 'Developer', value: 'Developer' },
+    { label: 'Diet Specialist', value: 'Diet Specialist' },
+    { label: 'Front Desk Executive', value: 'Front Desk Executive' },
+    { label: 'IT Manager', value: 'IT Manager' },
+    { label: 'Lab Technician', value: 'Lab Technician' },
+    { label: 'Nurse', value: 'Nurse' }
   ];
 
   employeeOptions = [
     { label: 'Finance and Accounts', value: 'Finance and Accounts' },
-    { label: 'IT team', value: 'IT team' },
-    { label: 'LABORATORY', value: 'LABORATORY' },
-    { label: 'Physician', value: 'Physician' },
+    { label: 'IT Team', value: 'IT Team' },
+    { label: 'Laboratory', value: 'LABORATORY' },
+    { label: 'Physician', value: 'Physician' }
   ];
 
   employeeDepOptions = [
     { label: 'Ambulance Department', value: 'Ambulance Department' },
-    { label: 'Canary Test', value: 'Canary Test' },
     { label: 'Cardiology Department', value: 'Cardiology Department' },
     { label: 'Dermatology Department', value: 'Dermatology Department' },
-    { label: 'dWise department', value: 'dWise department' },
     { label: 'ER', value: 'ER' },
-    { label: 'Excel Main', value: 'Excel Main' },
-    { label: 'External Sub Department', value: 'External Sub Department' },
-    { label: 'External Medicine', value: 'External Medicine' },
-    { label: 'Finance and Accounts', value: 'Finance and Accounts' },
-    { label: 'IT team', value: 'IT team' },
-    { label: 'LABORATORY', value: 'LABORATORY' },
-    { label: 'Physician', value: 'Physician' },
+    { label: 'Finance and Accounts', value: 'Finance and Accounts' }
   ];
 
   countryOptions = [
     { label: 'India', value: 'India' },
-    { label: 'United States', value: 'United States' },
+    { label: 'United States', value: 'United States' }
   ];
 
   stateOptions = [
-    { label: 'Andhra Pradesh', value: 'Andhra Pradesh' },
-    { label: 'Bihar', value: 'Bihar' },
-    { label: 'Gujarat', value: 'Gujarat' },
-    { label: 'Haryana', value: 'Haryana' },
     { label: 'Karnataka', value: 'Karnataka' },
-    { label: 'Kerala', value: 'Kerala' },
-    { label: 'Madhya Pradesh', value: 'Madhya Pradesh' },
     { label: 'Maharashtra', value: 'Maharashtra' },
-    { label: 'Punjab', value: 'Punjab' },
-    { label: 'Rajasthan', value: 'Rajasthan' },
     { label: 'Tamil Nadu', value: 'Tamil Nadu' },
-    { label: 'Telangana', value: 'Telangana' },
-    { label: 'Uttar Pradesh', value: 'Uttar Pradesh' },
-    { label: 'West Bengal', value: 'West Bengal' },
+    { label: 'Telangana', value: 'Telangana' }
   ];
 
   cityOptions = [
-    { label: 'Ahmedabad', value: 'Ahmedabad' },
     { label: 'Bangalore', value: 'Bangalore' },
-    { label: 'Chennai', value: 'Chennai' },
-    { label: 'Hyderabad', value: 'Hyderabad' },
-    { label: 'Indore', value: 'Indore' },
-    { label: 'Jaipur', value: 'Jaipur' },
-    { label: 'Kolkata', value: 'Kolkata' },
-    { label: 'Lucknow', value: 'Lucknow' },
     { label: 'Mumbai', value: 'Mumbai' },
-    { label: 'Patna', value: 'Patna' },
-    { label: 'Pune', value: 'Pune' },
+    { label: 'Hyderabad', value: 'Hyderabad' },
+    { label: 'Chennai', value: 'Chennai' }
   ];
 
   employeeSiteOptions = [
-    { label: 'Gokula Developers', value: 'Gokula Developers' },
+    { label: 'Gokula Developers', value: 'Gokula Developers' }
   ];
 
   constructor(
     private fb: FormBuilder,
     private employeeService: EmployeeService,
     private cdr: ChangeDetectorRef
-  ) { }
+  ) {}
+
+  // ================= INIT =================
 
   ngOnInit(): void {
-  this.initializeForm();
-  this.initializeDesignationForm();
-  this.initializeEmployeeGroupForm();
-  this.loadSavedOptions();
-}
+    this.initializeForm();
+    this.initializeDesignationForm();
+    this.initializeEmployeeGroupForm();
+    this.loadSavedOptions();
+  }
 
-  /**
-   * Load persisted options from localStorage (if any) so newly added options persist across reloads.
-   */
+  // ================= LOAD LOCAL STORAGE =================
+
   loadSavedOptions(): void {
     try {
       const des = localStorage.getItem('designationOptions');
       if (des) {
-        const parsed = JSON.parse(des);
-        if (Array.isArray(parsed) && parsed.length) {
-          this.designationOptions = parsed;
-        }
+        this.designationOptions = JSON.parse(des);
       }
 
       const groups = localStorage.getItem('employeeOptions');
       if (groups) {
-        const parsedG = JSON.parse(groups);
-        if (Array.isArray(parsedG) && parsedG.length) {
-          this.employeeOptions = parsedG;
-        }
+        this.employeeOptions = JSON.parse(groups);
       }
+
     } catch (e) {
-      // ignore parse errors and continue with defaults
       console.warn('Failed to load saved options', e);
     }
-    // ensure UI picks up the changes
+
     this.cdr.detectChanges();
   }
 
-  initializeDesignationForm(): void {
-    this.designationForm = this.fb.group({
-      name: ['', Validators.required],
-      code: ['', Validators.required],
-      description: ['', Validators.required]
-    });
-  }
-
-  initializeEmployeeGroupForm(): void {
-    this.employeeGroupForm = this.fb.group({
-      name: ['', Validators.required],
-      code: ['', Validators.required],
-      description: ['', Validators.required]
-    });
-  }
-
-
+  // ================= FORM INIT =================
 
   initializeForm(): void {
     this.employeeForm = this.fb.group({
@@ -218,54 +185,73 @@ export class EmployeeModalComponent implements OnInit {
       reportingManager: [''],
       department: ['', Validators.required],
       relievingDate: [null],
-      site: [''],
+      site: ['', Validators.required],
       country: [''],
       state: [''],
       city: [''],
       zipCode: [''],
       age: [25, [Validators.required, Validators.min(18), Validators.max(100)]],
       status: ['Active', Validators.required],
+      addressLine1: [''],
+      addressLine2: [''],
+
     });
 
+    // No phone toggle logic
     this.employeeForm.get('noPhone')?.valueChanges.subscribe(checked => {
-    const phoneControl = this.employeeForm.get('phone');
+      const phoneControl = this.employeeForm.get('phone');
 
-    if (checked) {
-      phoneControl?.disable();
-      phoneControl?.clearValidators();
-      phoneControl?.setValue('');
-    } else {
-      phoneControl?.enable();
-      phoneControl?.setValidators(Validators.required);
-    }
+      if (checked) {
+        phoneControl?.disable();
+        phoneControl?.clearValidators();
+        phoneControl?.setValue('');
+      } else {
+        phoneControl?.enable();
+        phoneControl?.setValidators(Validators.required);
+      }
 
-    phoneControl?.updateValueAndValidity();
-  });
+      phoneControl?.updateValueAndValidity();
+    });
 
     if (this.isEditMode) {
       this.employeeForm.get('id')?.disable();
     }
   }
 
+  initializeDesignationForm(): void {
+    this.designationForm = this.fb.group({
+      name: ['', Validators.required],
+      code: ['', Validators.required],
+      description: ['', Validators.required]
+    });
+  }
+
+  initializeEmployeeGroupForm(): void {
+    this.employeeGroupForm = this.fb.group({
+      name: ['', Validators.required],
+      code: ['', Validators.required],
+      description: ['', Validators.required]
+    });
+  }
+
   generateEmployeeId(): string {
     return `EMP-${Date.now()}`;
   }
 
-  handleHide(): void {
-  this.visible = false;
-  this.visibleChange.emit(false);
-}
+  // ================= ACTIONS =================
 
+  handleHide(): void {
+    this.visible = false;
+    this.visibleChange.emit(false);
+  }
 
   onClear(): void {
-  this.employeeForm.reset();
-
-  this.employeeForm.patchValue({
-    id: this.generateEmployeeId(),
-    status: 'Active'
-  });
-}
-
+    this.employeeForm.reset();
+    this.employeeForm.patchValue({
+      id: this.generateEmployeeId(),
+      status: 'Active'
+    });
+  }
 
   onSubmit(): void {
     if (this.employeeForm.invalid) {
@@ -280,17 +266,19 @@ export class EmployeeModalComponent implements OnInit {
       : this.employeeService.addEmployee(formValue);
 
     request.subscribe({
-      next: () => this.save.emit(),
+      next: () => {
+        this.save.emit();
+        this.visible = false;
+        this.visibleChange.emit(false);
+        this.employeeForm.reset();
+        this.cdr.detectChanges();
+      },
       error: (err) => console.error('Operation failed:', err)
     });
   }
 
-  // Allow parent to open the dialog programmatically to avoid change-detection timing issues
-  open(): void {
-    this.visible = true;
-  }
+  // ================= DESIGNATION =================
 
-  // Designation dialog handlers
   openDesignationDialog(): void {
     this.designationForm.reset();
     this.showDesignationDialog = true;
@@ -306,25 +294,29 @@ export class EmployeeModalComponent implements OnInit {
       return;
     }
 
-    const { name, code, description } = this.designationForm.value;
-    const optionCode = code && code.toString().trim() ? code.toString().trim() : `${name.replace(/\s+/g, '_')}_${Date.now()}`;
+    const { name, code } = this.designationForm.value;
 
-    // Add new designation option and persist
-    this.designationOptions = [...this.designationOptions, { label: name, value: optionCode }];
-    try {
-      localStorage.setItem('designationOptions', JSON.stringify(this.designationOptions));
-    } catch (e) {
-      console.warn('Failed to persist designation options', e);
-    }
+    const optionCode =
+      code?.trim() || `${name.replace(/\s+/g, '_')}_${Date.now()}`;
 
-    // Select the newly created designation in the main form
+    this.designationOptions = [
+      ...this.designationOptions,
+      { label: name, value: optionCode }
+    ];
+
+    localStorage.setItem(
+      'designationOptions',
+      JSON.stringify(this.designationOptions)
+    );
+
     this.employeeForm.patchValue({ designation: optionCode });
+
     this.showDesignationDialog = false;
-    // ensure the dropdown overlay updates
     this.cdr.detectChanges();
   }
 
-  // Employee group dialog handlers
+  // ================= EMPLOYEE GROUP =================
+
   openEmployeeGroupDialog(): void {
     this.employeeGroupForm.reset();
     this.showEmployeeGroupDialog = true;
@@ -340,23 +332,24 @@ export class EmployeeModalComponent implements OnInit {
       return;
     }
 
-    const { name, code, description } = this.employeeGroupForm.value;
-    const optionCode = code && code.toString().trim() ? code.toString().trim() : `${name.replace(/\s+/g, '_')}_${Date.now()}`;
+    const { name, code } = this.employeeGroupForm.value;
 
-    // Add new employee group option and persist
-    this.employeeOptions = [...this.employeeOptions, { label: name, value: optionCode }];
-    try {
-      localStorage.setItem('employeeOptions', JSON.stringify(this.employeeOptions));
-    } catch (e) {
-      console.warn('Failed to persist employee group options', e);
-    }
+    const optionCode =
+      code?.trim() || `${name.replace(/\s+/g, '_')}_${Date.now()}`;
 
-    // Select the newly created group in the main form
+    this.employeeOptions = [
+      ...this.employeeOptions,
+      { label: name, value: optionCode }
+    ];
+
+    localStorage.setItem(
+      'employeeOptions',
+      JSON.stringify(this.employeeOptions)
+    );
+
     this.employeeForm.patchValue({ employeeGroup: optionCode });
 
     this.showEmployeeGroupDialog = false;
-    // ensure the dropdown overlay updates
     this.cdr.detectChanges();
   }
-
 }

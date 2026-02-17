@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { Employee } from '../../models/employee.model';
@@ -31,7 +31,10 @@ export class EmployeeListComponent implements OnInit {
   isEditMode = false;
   @ViewChild('empModal') empModal?: EmployeeModalComponent;
 
-  constructor(private employeeService: EmployeeService) {}
+  constructor(
+    private employeeService: EmployeeService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.loadEmployees();
@@ -47,17 +50,12 @@ export class EmployeeListComponent implements OnInit {
 
   openAddModal(): void {
     this.isEditMode = false;
-    // Open the dialog programmatically via ViewChild to avoid change-detection timing issues
     this.selectedEmployee = null;
-    // Open the dialog programmatically via ViewChild to avoid change-detection timing issues
+    
     if (this.empModal) {
-      this.empModal.open();
-    } else {
-      // Fallback — set showModal (kept for compatibility)
-      setTimeout(() => {
-        this.showModal = true;
-        // no debug logs
-      }, 0);
+      this.empModal.visible = true;
+      this.empModal.visibleChange.emit(true);
+      this.cdr.detectChanges();
     }
   }
 
