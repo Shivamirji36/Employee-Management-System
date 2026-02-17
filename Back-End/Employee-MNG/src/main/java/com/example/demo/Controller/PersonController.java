@@ -6,6 +6,8 @@ import com.example.demo.service.*;
 
 import org.springframework.web.bind.annotation.*;
 
+@RestController
+@RequestMapping("/api/person")
 public class PersonController {
 	
 	private final PersonService personService;
