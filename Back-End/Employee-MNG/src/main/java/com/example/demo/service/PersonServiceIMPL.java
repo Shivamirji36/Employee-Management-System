@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import com.example.demo.Repository.PersonRepository;
 import com.example.demo.dto.PersonRequestDTO;
 import com.example.demo.model.Person;
+import com.example.demo.model.PersonDetails;
+import com.example.demo.model.Address;
 
 import java.util.List;
 import java.util.UUID;
@@ -80,13 +82,51 @@ public class PersonServiceIMPL implements PersonService {
         person.setMobile(dto.mobile);
 
         if (dto.personDetails != null) {
-            dto.personDetails.setPerson(person);
-            person.setPersonDetails(dto.personDetails);
+            PersonDetails existingDetails = person.getPersonDetails();
+            if (existingDetails != null && existingDetails.getId() != null) {
+                existingDetails.setEmail(dto.personDetails.getEmail());
+                existingDetails.setDesignation(dto.personDetails.getDesignation());
+                existingDetails.setEmployeeGroup(dto.personDetails.getEmployeeGroup());
+                existingDetails.setReportingManager(dto.personDetails.getReportingManager());
+                existingDetails.setDepartment(dto.personDetails.getDepartment());
+                existingDetails.setStatus(dto.personDetails.getStatus());
+                existingDetails.setRelievingDate(dto.personDetails.getRelievingDate());
+                existingDetails.setSite(dto.personDetails.getSite());
+            } else {
+                PersonDetails newDetails = new PersonDetails();
+                newDetails.setEmail(dto.personDetails.getEmail());
+                newDetails.setDesignation(dto.personDetails.getDesignation());
+                newDetails.setEmployeeGroup(dto.personDetails.getEmployeeGroup());
+                newDetails.setReportingManager(dto.personDetails.getReportingManager());
+                newDetails.setDepartment(dto.personDetails.getDepartment());
+                newDetails.setStatus(dto.personDetails.getStatus());
+                newDetails.setRelievingDate(dto.personDetails.getRelievingDate());
+                newDetails.setSite(dto.personDetails.getSite());
+                newDetails.setPerson(person);
+                person.setPersonDetails(newDetails);
+            }
         }
 
         if (dto.address != null) {
-            dto.address.setPerson(person);
-            person.setAddress(dto.address);
+            Address existingAddress = person.getAddress();
+            if (existingAddress != null && existingAddress.getId() != null) {
+                existingAddress.setCountry(dto.address.getCountry());
+                existingAddress.setState(dto.address.getState());
+                existingAddress.setCity(dto.address.getCity());
+                existingAddress.setZipCode(dto.address.getZipCode());
+                existingAddress.setAddressLine1(dto.address.getAddressLine1());
+                existingAddress.setAddressLine2(dto.address.getAddressLine2());
+            } else {
+                Address newAddress = new Address();
+                newAddress.setCountry(dto.address.getCountry());
+                newAddress.setState(dto.address.getState());
+                newAddress.setCity(dto.address.getCity());
+                newAddress.setZipCode(dto.address.getZipCode());
+                newAddress.setAddressLine1(dto.address.getAddressLine1());
+                newAddress.setAddressLine2(dto.address.getAddressLine2());
+                newAddress.setPerson(person);
+                person.setAddress(newAddress);
+            }
         }
     }
 

@@ -2,6 +2,7 @@ package com.example.demo.model;
 
 import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 
 @Entity
@@ -19,6 +20,7 @@ public class PersonDetails {
 	 private String reportingManager;
 	 private String department;
 	 private String status;
+	 @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	 private LocalDate relievingDate;
 	 private String site;
 
