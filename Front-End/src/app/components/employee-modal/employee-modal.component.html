@@ -85,8 +85,8 @@
         </div>
 
         <div class="col-12 md:col-3">
-          <label>Employee ID</label>
-          <input pInputText class="w-full" formControlName="id" placeholder="Employee ID (auto-generated)" />
+          <label>Employee ID <span class="text-red-500">*</span></label>
+          <input pInputText class="w-full" formControlName="id" placeholder="Employee ID" />
         </div>
 
       </div>
@@ -155,7 +155,7 @@
 
         <div class="col-12 md:col-3">
           <label>Reporting Manager</label>
-          <input pInputText class="w-full" formControlName="reportingManager" placeholder="Reporting manager name" />
+          <input pInputText class="w-full" formControlName="reportingManager" />
         </div>
 
       </div>
@@ -177,7 +177,7 @@
         </div>
 
         <div class="col-12 md:col-3">
-          <label>Status</label>
+          <label>Status <span class="text-red-500">*</span></label>
           <p-select
             class="w-full"
             [options]="statusOptions"

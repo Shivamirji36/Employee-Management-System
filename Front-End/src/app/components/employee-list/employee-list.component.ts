@@ -16,6 +16,9 @@ import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { MenuModule } from 'primeng/menu';
 import { MenuItem } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
+
 
 @Component({
   selector: 'app-employee-list',
@@ -26,8 +29,10 @@ import { MenuItem } from 'primeng/api';
     TableModule,
     ButtonModule,
     TagModule,
-    MenuModule
+    MenuModule,
+    ToastModule
   ],
+  providers: [MessageService],
   templateUrl: './employee-list.component.html',
   styleUrls: ['./employee-list.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -46,8 +51,10 @@ export class EmployeeListComponent implements OnInit {
 
   constructor(
     private employeeService: EmployeeService,
-    private cdr: ChangeDetectorRef
-  ) {}
+    private cdr: ChangeDetectorRef,
+    private messageService: MessageService
+  ) { }
+
 
   ngOnInit(): void {
     this.loadEmployees();
@@ -109,8 +116,21 @@ export class EmployeeListComponent implements OnInit {
   }
 
   onEmployeeSaved(): void {
+
     this.showModal = false;
     this.loadEmployees();
+
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Success Message',
+      detail: this.isEditMode
+        ? 'Employee Updated Successfully'
+        : 'Employee details added successfully',
+      life: 3000
+    });
+
+    this.cdr.markForCheck();
   }
+
 }
 // ...existing code...

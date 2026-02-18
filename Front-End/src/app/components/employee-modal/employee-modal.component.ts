@@ -67,32 +67,45 @@ export class EmployeeModalComponent implements OnInit, OnChanges {
   originalFormValue: any = null;
 
   ngOnChanges(changes: SimpleChanges): void {
-    // If the form exists, handle incoming changes safely
-    if (this.employeeForm) {
-      if (changes['isEditMode']) {
-        const idControl = this.employeeForm.get('employeeId');
-        if (this.isEditMode) {
-          idControl?.disable({ emitEvent: false });
-        } else {
-          idControl?.enable({ emitEvent: false });
-        }
-      }
 
-      if (changes['employee'] && this.employee) {
-        // Patch values from employee and nested objects
-        this.employeeForm.patchValue({
-          ...this.employee,
-          employeeId: this.employee.employeeId || this.employee.id,
-          dateOfBirth: this.employee.dob,
-          phone: this.employee.mobile,
-          ...this.employee.personDetails,
-          ...this.employee.address
-        });
-        // Store original form value for change detection
-        this.originalFormValue = this.employeeForm.getRawValue();
-      }
+  if (changes['employee'] && this.employee && this.employeeForm) {
+
+    this.employeeForm.patchValue({  
+      salutation: this.employee.salutation,
+      firstName: this.employee.firstName,
+      middleName: this.employee.middleName,
+      lastName: this.employee.lastName,
+      gender: this.employee.gender,
+      dateOfBirth: this.employee.dob ? new Date(this.employee.dob) : null,
+      phone: this.employee.mobile,
+
+      id: this.employee.id,
+
+      email: this.employee.personDetails?.email,
+      designation: this.employee.personDetails?.designation,
+      employeeGroup: this.employee.personDetails?.employeeGroup,
+      reportingManager: this.employee.personDetails?.reportingManager,
+      department: this.employee.personDetails?.department,
+      status: this.employee.personDetails?.status,
+      relievingDate: this.employee.personDetails?.relievingDate
+        ? new Date(this.employee.personDetails.relievingDate)
+        : null,
+      site: this.employee.personDetails?.site,
+
+      country: this.employee.address?.country,
+      state: this.employee.address?.state,
+      city: this.employee.address?.city,
+      zipCode: this.employee.address?.zipCode,
+      addressLine1: this.employee.address?.addressLine1,
+      addressLine2: this.employee.address?.addressLine2
+    });
+
+    if (this.isEditMode) {
+      this.employeeForm.get('id')?.disable({ emitEvent: false });
     }
   }
+}
+
 
 
   genderOptions = [
@@ -170,22 +183,13 @@ export class EmployeeModalComponent implements OnInit, OnChanges {
     private cdr: ChangeDetectorRef
   ) {}
 
-  // ================= VALIDATORS =================
-
-  /**
-   * Validator to ensure field contains only numbers
-   */
   numericOnly(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
-      if (!control.value) {
-        return null; // Don't validate empty values
-      }
+      if (!control.value) return null;
       const valid = /^\d+$/.test(control.value);
       return valid ? null : { numericOnly: true };
     };
   }
-
-  // ================= INIT =================
 
   ngOnInit(): void {
     this.initializeForm();
@@ -194,28 +198,19 @@ export class EmployeeModalComponent implements OnInit, OnChanges {
     this.loadSavedOptions();
   }
 
-  // ================= LOAD LOCAL STORAGE =================
-
   loadSavedOptions(): void {
     try {
       const des = localStorage.getItem('designationOptions');
-      if (des) {
-        this.designationOptions = JSON.parse(des);
-      }
+      if (des) this.designationOptions = JSON.parse(des);
 
       const groups = localStorage.getItem('employeeOptions');
-      if (groups) {
-        this.employeeOptions = JSON.parse(groups);
-      }
-
+      if (groups) this.employeeOptions = JSON.parse(groups);
     } catch (e) {
       console.warn('Failed to load saved options', e);
     }
 
     this.cdr.detectChanges();
   }
-
-  // ================= FORM INIT =================
 
   initializeForm(): void {
     this.employeeForm = this.fb.group({
@@ -224,12 +219,12 @@ export class EmployeeModalComponent implements OnInit, OnChanges {
       middleName: [''],
       lastName: ['', Validators.required],
       gender: ['M', Validators.required],
-      dateOfBirth: [null, Validators.required],
+      dateOfBirth: [null],
       phone: ['', [Validators.required, this.numericOnly()]],
       noPhone: [false],
-  employeeId: [{ value: this.employee?.employeeId || this.employee?.id || this.generateEmployeeId(), disabled: this.isEditMode }],
+      id: [this.generateEmployeeId()],
       email: ['', [Validators.required, Validators.email]],
-      designation: ['', Validators.required],
+      designation: [''],
       employeeGroup: [''],
       reportingManager: [''],
       department: ['', Validators.required],
@@ -242,28 +237,8 @@ export class EmployeeModalComponent implements OnInit, OnChanges {
       age: [25, [Validators.required, Validators.min(18), Validators.max(100)]],
       status: ['Active', Validators.required],
       addressLine1: [''],
-      addressLine2: [''],
-
+      addressLine2: ['']
     });
-
-    // No phone toggle logic
-    this.employeeForm.get('noPhone')?.valueChanges.subscribe(checked => {
-      const phoneControl = this.employeeForm.get('phone');
-
-      if (checked) {
-        phoneControl?.disable();
-        phoneControl?.clearValidators();
-        phoneControl?.setValue('');
-      } else {
-        phoneControl?.enable();
-        phoneControl?.setValidators(Validators.required);
-      }
-
-      phoneControl?.updateValueAndValidity();
-    });
-
-    // id control is created with disabled state when in edit mode to avoid
-    // ExpressionChangedAfterItHasBeenCheckedError as recommended by Angular.
   }
 
   initializeDesignationForm(): void {
@@ -286,8 +261,6 @@ export class EmployeeModalComponent implements OnInit, OnChanges {
     return `EMP-${Date.now()}`;
   }
 
-  // ================= ACTIONS =================
-
   handleHide(): void {
     this.visible = false;
     this.visibleChange.emit(false);
@@ -307,9 +280,7 @@ export class EmployeeModalComponent implements OnInit, OnChanges {
   }
 
   hasFormChanged(): boolean {
-    if (!this.isEditMode || !this.originalFormValue) {
-      return true;
-    }
+    if (!this.isEditMode || !this.originalFormValue) return true;
     const currentValue = this.employeeForm.getRawValue();
     return JSON.stringify(currentValue) !== JSON.stringify(this.originalFormValue);
   }
@@ -321,16 +292,9 @@ export class EmployeeModalComponent implements OnInit, OnChanges {
       return;
     }
 
-    // Check if data has changed in edit mode
-    if (this.isEditMode && !this.hasFormChanged()) {
-      alert('No changes detected. No update needed.');
-      return;
-    }
-
     const formValue = this.employeeForm.getRawValue();
 
-    // Split form data into three separate objects
-    const personData = {
+    const completeData = {
       salutation: formValue.salutation,
       firstName: formValue.firstName,
       middleName: formValue.middleName,
@@ -338,60 +302,39 @@ export class EmployeeModalComponent implements OnInit, OnChanges {
       gender: formValue.gender,
       dob: formValue.dateOfBirth,
       mobile: formValue.phone,
-      id: formValue.employeeId
+      id: formValue.id,
+      personDetails: {
+        email: formValue.email,
+        designation: formValue.designation,
+        employeeGroup: formValue.employeeGroup,
+        reportingManager: formValue.reportingManager,
+        department: formValue.department,
+        status: formValue.status,
+        relievingDate: formValue.relievingDate,
+        site: formValue.site
+      },
+      address: {
+        country: formValue.country,
+        state: formValue.state,
+        city: formValue.city,
+        zipCode: formValue.zipCode,
+        addressLine1: formValue.addressLine1,
+        addressLine2: formValue.addressLine2
+      }
     };
-
-    const personDetailsData = {
-      email: formValue.email,
-      designation: formValue.designation,
-      employeeGroup: formValue.employeeGroup,
-      reportingManager: formValue.reportingManager,
-      department: formValue.department,
-      status: formValue.status,
-      relievingDate: formValue.relievingDate,
-      site: formValue.site
-    };
-
-    const addressData = {
-      country: formValue.country,
-      state: formValue.state,
-      city: formValue.city,
-      zipCode: formValue.zipCode,
-      addressLine1: formValue.addressLine1,
-      addressLine2: formValue.addressLine2
-    };
-
-    // Create the complete request object with nested structure
-    const completeData = {
-      ...personData,
-      personDetails: personDetailsData,
-      address: addressData
-    };
-
-    console.log('Submitting form data:', completeData);
 
     const request = this.isEditMode
       ? this.employeeService.updateEmployee(completeData)
       : this.employeeService.addEmployee(completeData);
 
-    request.subscribe({
-      next: (response) => {
-        console.log('Form submitted successfully:', response);
-        alert('Employee saved successfully!');
-        this.save.emit();
-        this.visible = false;
-        this.visibleChange.emit(false);
-        this.employeeForm.reset();
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Operation failed:', err);
-        alert('Error saving employee: ' + err.message);
-      }
+    request.subscribe(() => {
+      this.save.emit();
+      this.visible = false;
+      this.visibleChange.emit(false);
+      this.employeeForm.reset();
+      this.cdr.detectChanges();
     });
   }
-
-  // ================= DESIGNATION =================
 
   openDesignationDialog(): void {
     this.designationForm.reset();
@@ -409,27 +352,13 @@ export class EmployeeModalComponent implements OnInit, OnChanges {
     }
 
     const { name, code } = this.designationForm.value;
-
     const optionCode =
       code?.trim() || `${name.replace(/\s+/g, '_')}_${Date.now()}`;
 
-    this.designationOptions = [
-      ...this.designationOptions,
-      { label: name, value: optionCode }
-    ];
-
-    localStorage.setItem(
-      'designationOptions',
-      JSON.stringify(this.designationOptions)
-    );
-
     this.employeeForm.patchValue({ designation: optionCode });
-
     this.showDesignationDialog = false;
     this.cdr.detectChanges();
   }
-
-  // ================= EMPLOYEE GROUP =================
 
   openEmployeeGroupDialog(): void {
     this.employeeGroupForm.reset();
@@ -447,22 +376,10 @@ export class EmployeeModalComponent implements OnInit, OnChanges {
     }
 
     const { name, code } = this.employeeGroupForm.value;
-
     const optionCode =
       code?.trim() || `${name.replace(/\s+/g, '_')}_${Date.now()}`;
 
-    this.employeeOptions = [
-      ...this.employeeOptions,
-      { label: name, value: optionCode }
-    ];
-
-    localStorage.setItem(
-      'employeeOptions',
-      JSON.stringify(this.employeeOptions)
-    );
-
     this.employeeForm.patchValue({ employeeGroup: optionCode });
-
     this.showEmployeeGroupDialog = false;
     this.cdr.detectChanges();
   }
