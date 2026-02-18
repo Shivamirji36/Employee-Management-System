@@ -15,7 +15,14 @@ export class EmployeeService {
 
   getEmployees(): Observable<Employee[]> {
     return this.http.get<Employee[]>(this.apiUrl).pipe(
-      tap(data => console.log('Fetched employees:', data)),
+      tap(data => {
+        console.log('Fetched employees:', data);
+        data.forEach(emp => {
+          if (emp.employeeId && !emp.id) {
+            emp.id = emp.employeeId;
+          }
+        });
+      }),
       catchError(this.handleError)
     );
   }
@@ -23,18 +30,29 @@ export class EmployeeService {
   addEmployee(employee: Employee): Observable<Employee> {
     console.log('Sending employee data to backend:', employee);
     return this.http.post<Employee>(this.apiUrl, employee).pipe(
-      tap(response => console.log('Employee created successfully:', response)),
+      tap(response => {
+        console.log('Employee created successfully:', response);
+        if (response.employeeId && !response.id) {
+          response.id = response.employeeId;
+        }
+      }),
       catchError(this.handleError)
     );
   }
 
   updateEmployee(employee: Employee): Observable<Employee> {
+    const id = employee.employeeId || employee.id;
     console.log('Updating employee:', employee);
     return this.http.put<Employee>(
-      `${this.apiUrl}/${employee.id}`,
+      `${this.apiUrl}/${id}`,
       employee
     ).pipe(
-      tap(response => console.log('Employee updated successfully:', response)),
+      tap(response => {
+        console.log('Employee updated successfully:', response);
+        if (response.employeeId && !response.id) {
+          response.id = response.employeeId;
+        }
+      }),
       catchError(this.handleError)
     );
   }

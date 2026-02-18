@@ -19,7 +19,8 @@ export interface Address {
 }
 
 export interface Employee {
-  id: string;
+  id?: string;
+  employeeId?: string;
   name?: string;
   email?: string;
   phone?: string;

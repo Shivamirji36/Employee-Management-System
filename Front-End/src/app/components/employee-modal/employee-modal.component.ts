@@ -63,12 +63,14 @@ export class EmployeeModalComponent implements OnInit, OnChanges {
 
   showDesignationDialog = false;
   showEmployeeGroupDialog = false;
+  
+  originalFormValue: any = null;
 
   ngOnChanges(changes: SimpleChanges): void {
     // If the form exists, handle incoming changes safely
     if (this.employeeForm) {
       if (changes['isEditMode']) {
-        const idControl = this.employeeForm.get('id');
+        const idControl = this.employeeForm.get('employeeId');
         if (this.isEditMode) {
           idControl?.disable({ emitEvent: false });
         } else {
@@ -80,9 +82,14 @@ export class EmployeeModalComponent implements OnInit, OnChanges {
         // Patch values from employee and nested objects
         this.employeeForm.patchValue({
           ...this.employee,
+          employeeId: this.employee.employeeId || this.employee.id,
+          dateOfBirth: this.employee.dob,
+          phone: this.employee.mobile,
           ...this.employee.personDetails,
           ...this.employee.address
         });
+        // Store original form value for change detection
+        this.originalFormValue = this.employeeForm.getRawValue();
       }
     }
   }
@@ -220,7 +227,7 @@ export class EmployeeModalComponent implements OnInit, OnChanges {
       dateOfBirth: [null, Validators.required],
       phone: ['', [Validators.required, this.numericOnly()]],
       noPhone: [false],
-  id: [{ value: this.employee?.id || this.generateEmployeeId(), disabled: this.isEditMode }],
+  employeeId: [{ value: this.employee?.employeeId || this.employee?.id || this.generateEmployeeId(), disabled: this.isEditMode }],
       email: ['', [Validators.required, Validators.email]],
       designation: ['', Validators.required],
       employeeGroup: [''],
@@ -286,18 +293,37 @@ export class EmployeeModalComponent implements OnInit, OnChanges {
     this.visibleChange.emit(false);
   }
 
+  onCancel(): void {
+    this.visible = false;
+    this.visibleChange.emit(false);
+  }
+
   onClear(): void {
     this.employeeForm.reset();
     this.employeeForm.patchValue({
-      id: this.generateEmployeeId(),
+      employeeId: this.generateEmployeeId(),
       status: 'Active'
     });
+  }
+
+  hasFormChanged(): boolean {
+    if (!this.isEditMode || !this.originalFormValue) {
+      return true;
+    }
+    const currentValue = this.employeeForm.getRawValue();
+    return JSON.stringify(currentValue) !== JSON.stringify(this.originalFormValue);
   }
 
   onSubmit(): void {
     if (this.employeeForm.invalid) {
       this.employeeForm.markAllAsTouched();
       alert('Please fill all required fields correctly');
+      return;
+    }
+
+    // Check if data has changed in edit mode
+    if (this.isEditMode && !this.hasFormChanged()) {
+      alert('No changes detected. No update needed.');
       return;
     }
 
@@ -312,7 +338,7 @@ export class EmployeeModalComponent implements OnInit, OnChanges {
       gender: formValue.gender,
       dob: formValue.dateOfBirth,
       mobile: formValue.phone,
-      id: formValue.id
+      id: formValue.employeeId
     };
 
     const personDetailsData = {

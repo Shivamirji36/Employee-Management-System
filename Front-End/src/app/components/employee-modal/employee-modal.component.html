@@ -293,15 +293,15 @@
       <!-- Buttons -->
         <div class="flex justify-content-end gap-2 mt-4">
         <button pButton type="button"
-          label="Clear"
-          icon="pi pi-refresh"
+          [label]="isEditMode ? 'Cancel' : 'Clear'"
+          [icon]="isEditMode ? 'pi pi-times' : 'pi pi-refresh'"
           class="p-button-sm my-clear-btn btn-animate"
-          (click)="onClear()">
+          (click)="isEditMode ? onCancel() : onClear()">
         </button>
 
         <button pButton type="submit"
-          label="Save"
-          icon="pi pi-check"
+          [label]="isEditMode ? 'Update' : 'Save'"
+          [icon]="isEditMode ? 'pi pi-pencil' : 'pi pi-check'"
           class="p-button-sm my-save-btn btn-animate">
         </button>
       </div>

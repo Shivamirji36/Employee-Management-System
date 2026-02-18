@@ -86,8 +86,9 @@ export class EmployeeListComponent implements OnInit {
 
   // Use cached menu items for each employee
   getMenuItemsForEmployee(employee: Employee): MenuItem[] {
-    if (!this.menuItemsMap.has(employee.id)) {
-      this.menuItemsMap.set(employee.id, [
+    const empId = employee.employeeId || employee.id;
+    if (!this.menuItemsMap.has(empId!)) {
+      this.menuItemsMap.set(empId!, [
         {
           label: 'Edit',
           icon: 'pi pi-pencil',
@@ -96,11 +97,11 @@ export class EmployeeListComponent implements OnInit {
         {
           label: 'Delete',
           icon: 'pi pi-trash',
-          command: () => this.deleteEmployee(employee.id)
+          command: () => this.deleteEmployee(empId!)
         }
       ]);
     }
-    return this.menuItemsMap.get(employee.id)!;
+    return this.menuItemsMap.get(empId!)!;
   }
 
   getStatusSeverity(status: string): 'success' | 'danger' {
