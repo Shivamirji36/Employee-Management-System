@@ -1,7 +1,6 @@
 import {
   Component,
   OnInit,
-  ViewChild,
   ChangeDetectorRef,
   ChangeDetectionStrategy
 } from '@angular/core';
@@ -18,7 +17,6 @@ import { TagModule } from 'primeng/tag';
 import { MenuModule } from 'primeng/menu';
 import { MenuItem } from 'primeng/api';
 
-
 @Component({
   selector: 'app-employee-list',
   standalone: true,
@@ -34,6 +32,8 @@ import { MenuItem } from 'primeng/api';
   styleUrls: ['./employee-list.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
+// ...existing code...
+
 export class EmployeeListComponent implements OnInit {
 
   employees: Employee[] = [];
@@ -41,78 +41,67 @@ export class EmployeeListComponent implements OnInit {
   selectedEmployee: Employee | null = null;
   isEditMode = false;
 
-  @ViewChild('empModal') empModal?: EmployeeModalComponent;
+  // Cache menu items per employee ID
+  private menuItemsMap: Map<string, MenuItem[]> = new Map();
 
   constructor(
     private employeeService: EmployeeService,
     private cdr: ChangeDetectorRef
   ) {}
 
-  // Open the PrimeNG menu on mousedown and stop event propagation so parent row
-  // handlers don't interfere. Using mousedown ensures the menu is shown before
-  // any focus/blur or click logic from the row can run.
-  openMenu(event: Event, menuRef: any): void {
-    event.preventDefault();
-    event.stopPropagation();
-    if (menuRef && typeof menuRef.toggle === 'function') {
-      menuRef.toggle(event as any);
-    }
-  }
-
   ngOnInit(): void {
     this.loadEmployees();
   }
 
-
   loadEmployees(): void {
     this.employeeService.getEmployees().subscribe((data: Employee[]) => {
       this.employees = data;
+      this.menuItemsMap.clear(); // Clear cache to avoid stale items
       this.cdr.markForCheck();
     });
   }
-
 
   openAddModal(): void {
     this.isEditMode = false;
     this.selectedEmployee = null;
     this.showModal = true;
-    this.cdr.markForCheck();
+    this.cdr.detectChanges();
   }
-
 
   openEditModal(employee: Employee): void {
     this.isEditMode = true;
     this.selectedEmployee = { ...employee };
     this.showModal = true;
-    this.cdr.markForCheck();
+    this.cdr.detectChanges();
   }
-
 
   deleteEmployee(id: string): void {
     if (!confirm('Are you sure you want to delete this employee?')) {
       return;
     }
-
     this.employeeService.deleteEmployee(id).subscribe(() => {
       this.loadEmployees();
     });
   }
 
-
-  getMenuItems(employee: Employee): MenuItem[] {
-    return [
-      {
-        label: 'Edit',
-        icon: 'pi pi-pencil',
-        command: () => this.openEditModal(employee)
-      },
-      {
-        label: 'Delete',
-        icon: 'pi pi-trash',
-        command: () => this.deleteEmployee(employee.id)
-      }
-    ];
-}
+  // Use cached menu items for each employee
+  getMenuItemsForEmployee(employee: Employee): MenuItem[] {
+    if (!this.menuItemsMap.has(employee.id)) {
+      this.menuItemsMap.set(employee.id, [
+        {
+          label: 'Edit',
+          icon: 'pi pi-pencil',
+          command: () => this.openEditModal(employee)
+        },
+        {
+          label: 'Delete',
+          icon: 'pi pi-trash',
+          command: () => this.deleteEmployee(employee.id)
+        }
+      ]);
+    }
+    return this.menuItemsMap.get(employee.id)!;
+  }
 
   getStatusSeverity(status: string): 'success' | 'danger' {
     return status === 'Active' ? 'success' : 'danger';
@@ -123,3 +112,4 @@ export class EmployeeListComponent implements OnInit {
     this.loadEmployees();
   }
 }
+// ...existing code...

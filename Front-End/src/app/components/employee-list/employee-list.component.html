@@ -75,13 +75,13 @@
 
         <td class="action-cell">
 
-        <p-menu #menu [popup]="true" [model]="getMenuItems(employee)" appendTo="body">
+        <p-menu #menu [popup]="true" [model]="getMenuItemsForEmployee(employee)" appendTo="body">
         </p-menu>
-
-
         
-        <button pButton icon="pi pi-ellipsis-v" type="button" class="action-btn" (click)="menu.toggle($event)">
+        <button pButton icon="pi pi-ellipsis-v" type="button" class="action-btn" (click)="menu.show($event)">
         </button>
+        </td>
+
 
 
       </tr>
