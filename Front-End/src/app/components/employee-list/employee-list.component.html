@@ -7,6 +7,14 @@
       <small>View and Manage Employee Information</small>
     </div>
 
+    <div class="center-section">
+      <button
+        pButton
+        label="Export Employees"
+        >
+      </button>
+    </div>
+
     <div class="right-section">
       <button
         pButton
@@ -36,6 +44,7 @@
         <th class="action-btn">Department</th>
         <th class="action-btn">Reporting Manager</th>
         <th class="action-btn">Status</th>
+        <th class="action-btn"> Print </th>
         <th class="action-btn"></th>
       </tr>
     </ng-template>
@@ -75,6 +84,16 @@
         </td>
 
         <td class="action-cell">
+          <button
+            pButton
+            icon="pi pi-print"
+            size="large"
+            class="print-btn p-button-rounded p-button-text"
+            (click)="printEmployee(employee)">
+          </button>
+        </td>
+
+        <td class="action-cell">
 
         <p-menu #menu [popup]="true" [model]="getMenuItemsForEmployee(employee)" appendTo="body">
         </p-menu>
@@ -82,8 +101,6 @@
         <button pButton icon="pi pi-ellipsis-v" type="button" class="action-btn" (click)="menu.show($event)">
         </button>
         </td>
-
-
 
       </tr>
     </ng-template>

@@ -40,6 +40,9 @@ import { MessageService } from 'primeng/api';
 // ...existing code...
 
 export class EmployeeListComponent implements OnInit {
+printEmployee(_t38: any) {
+throw new Error('Method not implemented.');
+}
 
   employees: Employee[] = [];
   showModal = false;
