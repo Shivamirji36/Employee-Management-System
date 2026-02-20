@@ -4,6 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.demo.model.PersonDetails;
 
-public interface PersonDetailsRepository extends JpaRepository<PersonDetails, String> {
+public interface PersonDetailsRepository extends JpaRepository<PersonDetails, Long> {
 
 }
