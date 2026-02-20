@@ -66,44 +66,62 @@ export class EmployeeModalComponent implements OnInit, OnChanges {
   
   originalFormValue: any = null;
 
-  ngOnChanges(changes: SimpleChanges): void {
+      ngOnChanges(changes: SimpleChanges): void {
 
-  if (changes['employee'] && this.employee && this.employeeForm) {
+      if (!this.employeeForm) return;
 
-    this.employeeForm.patchValue({
-      salutation: this.employee.salutation,
-      firstName: this.employee.firstName,
-      middleName: this.employee.middleName,
-      lastName: this.employee.lastName,
-      gender: this.employee.gender,
-      dateOfBirth: this.employee.dob ? new Date(this.employee.dob) : null,
-      phone: this.employee.mobile,
-      employeeId: this.employee.employeeId,
+      // ===== EDIT MODE =====
+      if (changes['employee'] && this.employee) {
 
-      email: this.employee.personDetails?.email,
-      designation: this.employee.personDetails?.designation,
-      employeeGroup: this.employee.personDetails?.employeeGroup,
-      reportingManager: this.employee.personDetails?.reportingManager,
-      department: this.employee.personDetails?.department,
-      status: this.employee.personDetails?.status,
-      relievingDate: this.employee.personDetails?.relievingDate
-        ? new Date(this.employee.personDetails.relievingDate)
-        : null,
-      site: this.employee.personDetails?.site,
+        this.employeeForm.reset(); // <-- IMPORTANT
 
-      country: this.employee.address?.country,
-      state: this.employee.address?.state,
-      city: this.employee.address?.city,
-      zipCode: this.employee.address?.zipCode,
-      addressLine1: this.employee.address?.addressLine1,
-      addressLine2: this.employee.address?.addressLine2
-    });
+        this.employeeForm.patchValue({
+          salutation: this.employee.salutation,
+          firstName: this.employee.firstName,
+          middleName: this.employee.middleName,
+          lastName: this.employee.lastName,
+          gender: this.employee.gender,
+          dateOfBirth: this.employee.dob ? new Date(this.employee.dob) : null,
+          phone: this.employee.mobile,
+          id: this.employee.employeeId,
 
-    if (this.isEditMode) {
-      this.employeeForm.get('employeeId')?.disable({ emitEvent: false });
+          email: this.employee.personDetails?.email,
+          designation: this.employee.personDetails?.designation,
+          employeeGroup: this.employee.personDetails?.employeeGroup,
+          reportingManager: this.employee.personDetails?.reportingManager,
+          department: this.employee.personDetails?.department,
+          status: this.employee.personDetails?.status,
+          relievingDate: this.employee.personDetails?.relievingDate
+            ? new Date(this.employee.personDetails.relievingDate)
+            : null,
+          site: this.employee.personDetails?.site,
+
+          country: this.employee.address?.country,
+          state: this.employee.address?.state,
+          city: this.employee.address?.city,
+          zipCode: this.employee.address?.zipCode,
+          addressLine1: this.employee.address?.addressLine1,
+          addressLine2: this.employee.address?.addressLine2
+        });
+
+        this.employeeForm.get('employeeId')?.disable({ emitEvent: false });
+      }
+
+      // ===== ADD MODE =====
+      if (changes['isEditMode'] && !this.isEditMode) {
+
+        this.employeeForm.reset(); // <-- CLEAR EVERYTHING
+
+        this.employeeForm.patchValue({
+          employeeId: this.generateEmployeeId(),
+          status: 'Active',
+          gender: 'M'
+        });
+
+        this.employeeForm.get('employeeId')?.disable({ emitEvent: false });
+      }
     }
-  }
-}
+
 
 
 
@@ -239,7 +257,7 @@ export class EmployeeModalComponent implements OnInit, OnChanges {
       dateOfBirth: [null],
       phone: ['', [Validators.required, this.numericOnly()]],
       noPhone: [false],
-      employeeId: [{ value: this.employee?.employeeId || this.employee?.employeeId || this.generateEmployeeId() }],
+      id: [this.generateEmployeeId(), { disabled: true }],
       email: ['', [Validators.required, Validators.email]],
       designation: [''],
       employeeGroup: [''],
@@ -313,7 +331,7 @@ export class EmployeeModalComponent implements OnInit, OnChanges {
   onClear(): void {
     this.employeeForm.reset();
     this.employeeForm.patchValue({
-      employeeId: this.generateEmployeeId(),
+      id: this.generateEmployeeId(),
       status: 'Active'
     });
   }

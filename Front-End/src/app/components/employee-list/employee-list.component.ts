@@ -30,20 +30,15 @@ import { MessageService } from 'primeng/api';
     ButtonModule,
     TagModule,
     MenuModule,
-    ToastModule
+    ToastModule,
   ],
   providers: [MessageService],
   templateUrl: './employee-list.component.html',
   styleUrls: ['./employee-list.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 // ...existing code...
-
 export class EmployeeListComponent implements OnInit {
-printEmployee(_t38: any) {
-throw new Error('Method not implemented.');
-}
-
   employees: Employee[] = [];
   showModal = false;
   selectedEmployee: Employee | null = null;
@@ -55,9 +50,8 @@ throw new Error('Method not implemented.');
   constructor(
     private employeeService: EmployeeService,
     private cdr: ChangeDetectorRef,
-    private messageService: MessageService
-  ) { }
-
+    private messageService: MessageService,
+  ) {}
 
   ngOnInit(): void {
     this.loadEmployees();
@@ -102,13 +96,13 @@ throw new Error('Method not implemented.');
         {
           label: 'Edit',
           icon: 'pi pi-pencil',
-          command: () => this.openEditModal(employee)
+          command: () => this.openEditModal(employee),
         },
         {
           label: 'Delete',
           icon: 'pi pi-trash',
-          command: () => this.deleteEmployee(empId!)
-        }
+          command: () => this.deleteEmployee(empId!),
+        },
       ]);
     }
     return this.menuItemsMap.get(empId!)!;
@@ -119,7 +113,6 @@ throw new Error('Method not implemented.');
   }
 
   onEmployeeSaved(): void {
-
     this.showModal = false;
     this.loadEmployees();
 
@@ -129,11 +122,27 @@ throw new Error('Method not implemented.');
       detail: this.isEditMode
         ? 'Employee Updated Successfully'
         : 'Employee details added successfully',
-      life: 3000
+      life: 3000,
     });
 
     this.cdr.markForCheck();
   }
 
+  printEmployee(employeeId: string): void {
+    this.employeeService.downloadEmployeeReport(employeeId).subscribe({
+      next: (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const anchor = document.createElement('a');
+        anchor.href = url;
+        anchor.download = `employee_${employeeId}.pdf`;
+        anchor.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => {
+        console.error('Failed to download report:', err);
+        alert('Could not generate report. Please try again.');
+      },
+    });
+  }
 }
 // ...existing code...
