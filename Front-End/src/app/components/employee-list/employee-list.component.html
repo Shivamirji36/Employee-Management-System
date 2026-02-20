@@ -5,12 +5,14 @@
       <small>View and Manage Employee Information</small>
     </div>
 
-    <div class="center-section">
-      <button pButton label="Export Employees"></button>
-    </div>
+    <div class="actions-wrapper">
+      <div class="center-section">
+        <button icon="pi pi-download" pButton label="Export Employees"></button>
+      </div>
 
-    <div class="right-section">
-      <button pButton label="+ Add Employee" (click)="openAddModal()"></button>
+      <div class="right-section">
+        <button icon="pi pi-plus" pButton label="Add Employee" (click)="openAddModal()"></button>
+      </div>
     </div>
   </div>
 
