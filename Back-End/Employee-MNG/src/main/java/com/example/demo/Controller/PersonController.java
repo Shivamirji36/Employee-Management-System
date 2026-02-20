@@ -1,20 +1,19 @@
 package com.example.demo.Controller;
 
+import com.example.demo.dto.EmployeeReportDTO;
 import com.example.demo.dto.PersonRequestDTO;
 import com.example.demo.model.Person;
 import com.example.demo.service.PersonService;
-
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:4200", 
-             allowedHeaders = "*", 
+@CrossOrigin(origins = "http://localhost:4200",
+             allowedHeaders = "*",
              methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
              allowCredentials = "true")
 @RestController
 @RequestMapping("/api/employees")
-public class PersonController {
+public class PersonController { 
 
     private final PersonService personService;
 
@@ -33,8 +32,9 @@ public class PersonController {
         return personService.getAllEmployees();
     }
 
+    // Returns EmployeeReportDTO (flat data from DB function) instead of Person entity
     @GetMapping("/{employeeId}")
-    public Person getEmployeeById(@PathVariable String employeeId) {
+    public EmployeeReportDTO getEmployeeById(@PathVariable String employeeId) {
         return personService.getEmployeeById(employeeId);
     }
 

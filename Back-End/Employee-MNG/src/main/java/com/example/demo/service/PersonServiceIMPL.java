@@ -1,13 +1,13 @@
 package com.example.demo.service;
 
 import org.springframework.stereotype.Service;
-
 import com.example.demo.Repository.PersonRepository;
+import com.example.demo.dto.EmployeeReportDTO;
+import com.example.demo.dto.EmployeeReportProjection;
 import com.example.demo.dto.PersonRequestDTO;
 import com.example.demo.model.Person;
 import com.example.demo.model.PersonDetails;
 import com.example.demo.model.Address;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -23,18 +23,10 @@ public class PersonServiceIMPL implements PersonService {
     // ===================== CREATE =====================
     @Override
     public Person savePerson(PersonRequestDTO dto) {
-
         Person person = new Person();
-
-        // Set employee ID from DTO
-        if (dto.id != null && !dto.id.isEmpty()) {
-            person.setEmployeeId(dto.id);
-        } else {
-            person.setEmployeeId(generateEmployeeId());
-        }
-
+        person.setEmployeeId(dto.id != null && !dto.id.isEmpty()
+            ? dto.id : generateEmployeeId());
         mapDtoToEntity(dto, person);
-
         return personRepository.save(person);
     }
 
@@ -44,35 +36,69 @@ public class PersonServiceIMPL implements PersonService {
         return personRepository.findAll();
     }
 
-    // ===================== GET BY ID =====================
+    // ===================== GET BY ID (DB function) =====================
     @Override
-    public Person getEmployeeById(String id) {
-        return personRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Employee not found with id: " + id));
+    public EmployeeReportDTO getEmployeeById(String id) {
+        EmployeeReportProjection projection = personRepository
+            .getEmployeeByIdFromFunction(id)
+            .orElseThrow(() -> new RuntimeException("Employee not found: " + id));
+        return mapProjectionToDTO(projection);
     }
 
     // ===================== UPDATE =====================
     @Override
     public Person updateEmployee(String id, PersonRequestDTO dto) {
-
-        Person existingPerson = getEmployeeById(id);
-
-        mapDtoToEntity(dto, existingPerson);
-
-        return personRepository.save(existingPerson);
+        Person existing = findPersonEntity(id);
+        mapDtoToEntity(dto, existing);
+        return personRepository.save(existing);
     }
 
-    // ===================== DELETE =====================
     @Override
     public void deleteEmployee(String id) {
-
-        Person person = getEmployeeById(id);
-        personRepository.delete(person);
+        personRepository.delete(findPersonEntity(id));
     }
 
-    // ===================== COMMON MAPPING METHOD =====================
-    private void mapDtoToEntity(PersonRequestDTO dto, Person person) {
+    // ===================== PRIVATE: Fetch JPA entity (for update/delete) =====================
+    private Person findPersonEntity(String id) {
+        return personRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Employee not found: " + id));
+    }
 
+    // ===================== PRIVATE: Map Projection → DTO =====================
+    // Projection uses snake_case (matching DB column names), DTO uses camelCase
+    private EmployeeReportDTO mapProjectionToDTO(EmployeeReportProjection p) {
+        EmployeeReportDTO dto = new EmployeeReportDTO();
+        dto.setEmployeeId(safe(p.getEmployee_id()));
+        dto.setSalutation(safe(p.getSalutation()));
+        dto.setFirstName(safe(p.getFirst_name()));
+        dto.setMiddleName(safe(p.getMiddle_name()));
+        dto.setLastName(safe(p.getLast_name()));
+        dto.setGender(safe(p.getGender()));
+        dto.setDob(p.getDob() != null ? p.getDob().toString() : "");
+        dto.setMobile(safe(p.getMobile()));
+        dto.setEmail(safe(p.getEmail()));
+        dto.setDesignation(safe(p.getDesignation()));
+        dto.setEmployeeGroup(safe(p.getEmployee_group()));
+        dto.setReportingManager(safe(p.getReporting_manager()));
+        dto.setDepartment(safe(p.getDepartment()));
+        dto.setStatus(safe(p.getStatus()));
+        dto.setRelievingDate(p.getRelieving_date() != null ? p.getRelieving_date().toString() : "");
+        dto.setSite(safe(p.getSite()));
+        dto.setCountry(safe(p.getCountry()));
+        dto.setState(safe(p.getState()));
+        dto.setCity(safe(p.getCity()));
+        dto.setZipCode(safe(p.getZip_code()));
+        dto.setAddressLine1(safe(p.getAddress_line1()));
+        dto.setAddressLine2(safe(p.getAddress_line2()));
+        return dto;
+    }
+
+    private String safe(String value) {
+        return value != null ? value : "";
+    }
+
+    // ===================== PRIVATE: Map RequestDTO → Entity =====================
+    private void mapDtoToEntity(PersonRequestDTO dto, Person person) {
         person.setSalutation(dto.salutation);
         person.setFirstName(dto.firstName);
         person.setMiddleName(dto.middleName);
@@ -82,51 +108,31 @@ public class PersonServiceIMPL implements PersonService {
         person.setMobile(dto.mobile);
 
         if (dto.personDetails != null) {
-            PersonDetails existingDetails = person.getPersonDetails();
-            if (existingDetails != null && existingDetails.getId() != null) {
-                existingDetails.setEmail(dto.personDetails.getEmail());
-                existingDetails.setDesignation(dto.personDetails.getDesignation());
-                existingDetails.setEmployeeGroup(dto.personDetails.getEmployeeGroup());
-                existingDetails.setReportingManager(dto.personDetails.getReportingManager());
-                existingDetails.setDepartment(dto.personDetails.getDepartment());
-                existingDetails.setStatus(dto.personDetails.getStatus());
-                existingDetails.setRelievingDate(dto.personDetails.getRelievingDate());
-                existingDetails.setSite(dto.personDetails.getSite());
-            } else {
-                PersonDetails newDetails = new PersonDetails();
-                newDetails.setEmail(dto.personDetails.getEmail());
-                newDetails.setDesignation(dto.personDetails.getDesignation());
-                newDetails.setEmployeeGroup(dto.personDetails.getEmployeeGroup());
-                newDetails.setReportingManager(dto.personDetails.getReportingManager());
-                newDetails.setDepartment(dto.personDetails.getDepartment());
-                newDetails.setStatus(dto.personDetails.getStatus());
-                newDetails.setRelievingDate(dto.personDetails.getRelievingDate());
-                newDetails.setSite(dto.personDetails.getSite());
-                newDetails.setPerson(person);
-                person.setPersonDetails(newDetails);
-            }
+            PersonDetails pd = person.getPersonDetails() != null
+                ? person.getPersonDetails() : new PersonDetails();
+            pd.setEmail(dto.personDetails.getEmail());
+            pd.setDesignation(dto.personDetails.getDesignation());
+            pd.setEmployeeGroup(dto.personDetails.getEmployeeGroup());
+            pd.setReportingManager(dto.personDetails.getReportingManager());
+            pd.setDepartment(dto.personDetails.getDepartment());
+            pd.setStatus(dto.personDetails.getStatus());
+            pd.setRelievingDate(dto.personDetails.getRelievingDate());
+            pd.setSite(dto.personDetails.getSite());
+            pd.setPerson(person);
+            person.setPersonDetails(pd);
         }
 
         if (dto.address != null) {
-            Address existingAddress = person.getAddress();
-            if (existingAddress != null && existingAddress.getId() != null) {
-                existingAddress.setCountry(dto.address.getCountry());
-                existingAddress.setState(dto.address.getState());
-                existingAddress.setCity(dto.address.getCity());
-                existingAddress.setZipCode(dto.address.getZipCode());
-                existingAddress.setAddressLine1(dto.address.getAddressLine1());
-                existingAddress.setAddressLine2(dto.address.getAddressLine2());
-            } else {
-                Address newAddress = new Address();
-                newAddress.setCountry(dto.address.getCountry());
-                newAddress.setState(dto.address.getState());
-                newAddress.setCity(dto.address.getCity());
-                newAddress.setZipCode(dto.address.getZipCode());
-                newAddress.setAddressLine1(dto.address.getAddressLine1());
-                newAddress.setAddressLine2(dto.address.getAddressLine2());
-                newAddress.setPerson(person);
-                person.setAddress(newAddress);
-            }
+            Address addr = person.getAddress() != null
+                ? person.getAddress() : new Address();
+            addr.setCountry(dto.address.getCountry());
+            addr.setState(dto.address.getState());
+            addr.setCity(dto.address.getCity());
+            addr.setZipCode(dto.address.getZipCode());
+            addr.setAddressLine1(dto.address.getAddressLine1());
+            addr.setAddressLine2(dto.address.getAddressLine2());
+            addr.setPerson(person);
+            person.setAddress(addr);
         }
     }
 
