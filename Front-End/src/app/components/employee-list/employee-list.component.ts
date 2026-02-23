@@ -38,111 +38,127 @@ import { MessageService } from 'primeng/api';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 // ...existing code...
-export class EmployeeListComponent implements OnInit {
-  employees: Employee[] = [];
-  showModal = false;
-  selectedEmployee: Employee | null = null;
-  isEditMode = false;
+  export class EmployeeListComponent implements OnInit {
+    employees: Employee[] = [];
+    showModal = false;
+    selectedEmployee: Employee | null = null;
+    isEditMode = false;
 
-  // Cache menu items per employee ID
-  private menuItemsMap: Map<string, MenuItem[]> = new Map();
+    // Cache menu items per employee ID
+    private menuItemsMap: Map<string, MenuItem[]> = new Map();
 
-  constructor(
-    private employeeService: EmployeeService,
-    private cdr: ChangeDetectorRef,
-    private messageService: MessageService,
-  ) {}
+    constructor(
+      private employeeService: EmployeeService,
+      private cdr: ChangeDetectorRef,
+      private messageService: MessageService,
+    ) {}
 
-  ngOnInit(): void {
-    this.loadEmployees();
-  }
-
-  loadEmployees(): void {
-    this.employeeService.getEmployees().subscribe((data: Employee[]) => {
-      this.employees = data;
-      this.menuItemsMap.clear(); // Clear cache to avoid stale items
-      this.cdr.markForCheck();
-    });
-  }
-
-  openAddModal(): void {
-    this.isEditMode = false;
-    this.selectedEmployee = null;
-    this.showModal = true;
-    this.cdr.detectChanges();
-  }
-
-  openEditModal(employee: Employee): void {
-    this.isEditMode = true;
-    this.selectedEmployee = { ...employee };
-    this.showModal = true;
-    this.cdr.detectChanges();
-  }
-
-  deleteEmployee(id: string): void {
-    if (!confirm('Are you sure you want to delete this employee?')) {
-      return;
-    }
-    this.employeeService.deleteEmployee(id).subscribe(() => {
+    ngOnInit(): void {
       this.loadEmployees();
-    });
-  }
-
-  // Use cached menu items for each employee
-  getMenuItemsForEmployee(employee: Employee): MenuItem[] {
-    const empId = employee.employeeId || employee.id;
-    if (!this.menuItemsMap.has(empId!)) {
-      this.menuItemsMap.set(empId!, [
-        {
-          label: 'Edit',
-          icon: 'pi pi-pencil',
-          command: () => this.openEditModal(employee),
-        },
-        {
-          label: 'Delete',
-          icon: 'pi pi-trash',
-          command: () => this.deleteEmployee(empId!),
-        },
-      ]);
     }
-    return this.menuItemsMap.get(empId!)!;
-  }
 
-  getStatusSeverity(status: string): 'success' | 'danger' {
-    return status === 'Active' ? 'success' : 'danger';
-  }
+    loadEmployees(): void {
+      this.employeeService.getEmployees().subscribe((data: Employee[]) => {
+        this.employees = data;
+        this.menuItemsMap.clear(); // Clear cache to avoid stale items
+        this.cdr.markForCheck();
+      });
+    }
 
-  onEmployeeSaved(): void {
-    this.showModal = false;
-    this.loadEmployees();
+    openAddModal(): void {
+      this.isEditMode = false;
+      this.selectedEmployee = null;
+      this.showModal = true;
+      this.cdr.detectChanges();
+    }
 
-    this.messageService.add({
-      severity: 'success',
-      summary: 'Success Message',
-      detail: this.isEditMode
-        ? 'Employee Updated Successfully'
-        : 'Employee details added successfully',
-      life: 3000,
-    });
+    openEditModal(employee: Employee): void {
+      this.isEditMode = true;
+      this.selectedEmployee = { ...employee };
+      this.showModal = true;
+      this.cdr.detectChanges();
+    }
 
-    this.cdr.markForCheck();
-  }
+    deleteEmployee(id: string): void {
+      if (!confirm('Are you sure you want to delete this employee?')) {
+        return;
+      }
+      this.employeeService.deleteEmployee(id).subscribe(() => {
+        this.loadEmployees();
+      });
+    }
 
-  printEmployee(employeeId: string): void {
-    this.employeeService.downloadEmployeeReport(employeeId).subscribe({
+    // Use cached menu items for each employee
+    getMenuItemsForEmployee(employee: Employee): MenuItem[] {
+      const empId = employee.employeeId || employee.id;
+      if (!this.menuItemsMap.has(empId!)) {
+        this.menuItemsMap.set(empId!, [
+          {
+            label: 'Edit',
+            icon: 'pi pi-pencil',
+            command: () => this.openEditModal(employee),
+          },
+          {
+            label: 'Delete',
+            icon: 'pi pi-trash',
+            command: () => this.deleteEmployee(empId!),
+          },
+        ]);
+      }
+      return this.menuItemsMap.get(empId!)!;
+    }
+
+    getStatusSeverity(status: string): 'success' | 'danger' {
+      return status === 'Active' ? 'success' : 'danger';
+    }
+
+    onEmployeeSaved(): void {
+      this.showModal = false;
+      this.loadEmployees();
+
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Success Message',
+        detail: this.isEditMode
+          ? 'Employee Updated Successfully'
+          : 'Employee details added successfully',
+        life: 3000,
+      });
+
+      this.cdr.markForCheck();
+    }
+
+    printEmployee(employeeId: string): void {
+      this.employeeService.downloadEmployeeReport(employeeId).subscribe({
+        next: (blob: Blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const anchor = document.createElement('a');
+          anchor.href = url;
+          anchor.download = `employee_${employeeId}.pdf`;
+          anchor.click();
+          window.URL.revokeObjectURL(url);
+        },
+        error: (err) => {
+          console.error('Failed to download report:', err);
+          alert('Could not generate report. Please try again.');
+        },
+      });
+    }
+
+    exportEmployees(): void {
+    this.employeeService.exportAllEmployeesReport().subscribe({
       next: (blob: Blob) => {
         const url = window.URL.createObjectURL(blob);
         const anchor = document.createElement('a');
         anchor.href = url;
-        anchor.download = `employee_${employeeId}.pdf`;
+        anchor.download = `all_employees_${new Date().toISOString().slice(0,10)}.pdf`;
         anchor.click();
         window.URL.revokeObjectURL(url);
       },
       error: (err) => {
-        console.error('Failed to download report:', err);
-        alert('Could not generate report. Please try again.');
-      },
+        console.error('Export failed:', err);
+        alert('Could not export report. Please try again.');
+      }
     });
   }
 }
-// ...existing code...

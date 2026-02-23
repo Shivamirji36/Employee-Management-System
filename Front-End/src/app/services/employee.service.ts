@@ -78,6 +78,12 @@ export class EmployeeService {
     });
   }
 
+  exportAllEmployeesReport(): Observable<Blob> {
+    return this.http.get('http://localhost:8080/api/employees/export', {
+      responseType: 'blob',
+    });
+  }
+
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'An error occurred';
 
