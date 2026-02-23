@@ -6,14 +6,17 @@ import org.springframework.stereotype.Service;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import javax.sql.DataSource;
 
 @Service
 public class JasperReportService {
 
     private final PersonService personService;
+    private DataSource dataSource;
 
-    public JasperReportService(PersonService personService) {
+    public JasperReportService(PersonService personService, DataSource dataSource) {
         this.personService = personService;
+        this.dataSource = dataSource;
     }
 
     public byte[] generateEmployeeReport(String employeeId) throws Exception {
@@ -54,6 +57,23 @@ public class JasperReportService {
 
         JasperReport jasperReport = JasperCompileManager.compileReport(stream);
         JasperPrint  jasperPrint  = JasperFillManager.fillReport(jasperReport, params, new JREmptyDataSource());
+        return JasperExportManager.exportReportToPdf(jasperPrint);
+    }
+
+    public byte[] generateAllEmployeesReport() throws Exception {
+
+        InputStream stream = getClass()
+                .getResourceAsStream("/reports/AllEmployees.jrxml");
+        if (stream == null) {
+            throw new RuntimeException("Report file not found at /reports/AllEmployees.jrxml");
+        }
+
+        JasperReport jasperReport = JasperCompileManager.compileReport(stream);
+
+        // Pass JDBC connection since the report has its own SQL query
+        JasperPrint jasperPrint = JasperFillManager.fillReport(
+                jasperReport, new HashMap<>(), dataSource.getConnection());
+
         return JasperExportManager.exportReportToPdf(jasperPrint);
     }
 }
