@@ -17,14 +17,8 @@
   </div>
 
   <p-toast position="top-right" closable="true"></p-toast>
-  <p-table
-    [value]="employees"
-    [paginator]="true"
-    [rows]="5"
-    stripedRows
-    showGridlines
-    responsiveLayout="scroll"
-  >
+  <p-table [value]="employees" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[5, 10, 25, 50]"
+    [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} employees">
     <ng-template pTemplate="header">
       <tr>
         <th class="action-btn">Employee</th>

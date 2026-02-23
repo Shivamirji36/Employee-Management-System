@@ -3,12 +3,14 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { Employee } from '../models/employee.model';
+import { environment } from '../../environments/environment';
+
 
 @Injectable({
   providedIn: 'root',
 })
 export class EmployeeService {
-  private apiUrl = 'http://localhost:8080/api/employees';
+  private apiUrl = environment.apiUrl + '/api/employees';
 
   constructor(private http: HttpClient) {}
 
@@ -83,6 +85,8 @@ export class EmployeeService {
       responseType: 'blob',
     });
   }
+
+  
 
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'An error occurred';
