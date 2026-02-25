@@ -12,7 +12,7 @@ import { environment } from '../../environments/environment';
 export class EmployeeService {
   private apiUrl = environment.apiUrl + '/api/employees';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getEmployees(): Observable<Employee[]> {
     return this.http.get<Employee[]>(this.apiUrl).pipe(
@@ -75,18 +75,18 @@ export class EmployeeService {
   }
 
   downloadEmployeeReport(employeeId: string): Observable<Blob> {
-    return this.http.get(`http://localhost:8080/api/employees/report/${employeeId}`, {
+    return this.http.get(`${environment.apiUrl}api/employees/report/${employeeId}`, {
       responseType: 'blob',
     });
   }
 
   exportAllEmployeesReport(): Observable<Blob> {
-    return this.http.get('http://localhost:8080/api/employees/export', {
+    return this.http.get(`${environment.apiUrl}/api/employees/report`, {
       responseType: 'blob',
     });
   }
 
-  
+
 
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'An error occurred';
