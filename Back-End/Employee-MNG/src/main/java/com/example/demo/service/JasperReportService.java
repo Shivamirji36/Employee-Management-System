@@ -81,18 +81,10 @@ public class JasperReportService {
             InputStream allStream = getClass().getResourceAsStream("/reports/AllEmployees.jrxml");
             InputStream detailsStream = getClass().getResourceAsStream("/reports/EmployeeDetails.jrxml");
 
-            if (allStream == null) {
-                throw new RuntimeException("AllEmployees.jrxml not found in classpath!");
-            }
-            if (detailsStream == null) {
-                throw new RuntimeException("EmployeeDetails.jrxml not found in classpath!");
-            }
-
             allEmployeesReport = JasperCompileManager.compileReport(allStream);
             employeeDetailsReport = JasperCompileManager.compileReport(detailsStream);
-
         } catch (Exception e) {
-            throw new RuntimeException("Failed to load Jasper Reports", e);
+            e.printStackTrace();
         }
     }
 }
