@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/employees")
-@CrossOrigin(origins = "http://localhost:4200")
 public class ReportController {
 
     @Autowired
@@ -38,7 +37,7 @@ public class ReportController {
         }
     }
 
-    @GetMapping("/employees")
+    @GetMapping("/report")
     public ResponseEntity<byte[]> generateReport() throws Exception {
 
         byte[] pdf = jasperReportService.generateAllEmployeesReport();
