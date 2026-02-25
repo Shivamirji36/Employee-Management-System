@@ -9,29 +9,29 @@ import java.time.LocalDate;
 @Table(name = "person")
 public class Person {
 
-    @Id
-    private String employeeId;
+	@Id
+	private String employeeId;
 
-    private String salutation;
-    private String firstName;
-    private String middleName;
-    private String lastName;
-    private String gender;
+	private String salutation;
+	private String firstName;
+	private String middleName;
+	private String lastName;
+	private String gender;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private LocalDate dob;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+	private LocalDate dob;
 
-    private String mobile;
+	private String mobile;
 
-    @OneToOne(mappedBy = "person", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private PersonDetails personDetails;
+	@OneToOne(mappedBy = "person", cascade = CascadeType.ALL)
+	@JsonManagedReference
+	private PersonDetails personDetails;
 
-    @OneToOne(mappedBy = "person", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private Address address;
-    
-    //Getters and Setters
+	@OneToOne(mappedBy = "person", cascade = CascadeType.ALL)
+	@JsonManagedReference
+	private Address address;
+
+	// Getters and Setters
 
 	public String getEmployeeId() {
 		return employeeId;
