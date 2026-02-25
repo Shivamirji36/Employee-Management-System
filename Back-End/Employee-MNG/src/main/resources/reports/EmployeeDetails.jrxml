@@ -9,7 +9,7 @@
     rightMargin="20"
     topMargin="20"
     bottomMargin="20"
-    isIgnorePagination="false"
+    ignorePagination="true"
     whenResourceMissingType="Empty"
     uuid="21a0f6a8-51d3-4f4f-ae4f-3855f0af1e0f">
 

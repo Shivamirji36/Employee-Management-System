@@ -8,6 +8,7 @@
     rightMargin="20"
     topMargin="20"
     bottomMargin="20"
+	ignorePagination="true"
     whenNoDataType="AllSectionsNoDetail"
     uuid="d5495170-9fc8-427d-b523-24beb682fec1">
 

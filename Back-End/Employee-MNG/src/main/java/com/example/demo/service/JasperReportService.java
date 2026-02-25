@@ -76,13 +76,15 @@ public class JasperReportService {
     private JasperReport employeeDetailsReport;
 
     @PostConstruct
-    public void loadReports() throws Exception {
+    public void loadReports() {
+        try {
+            InputStream allStream = getClass().getResourceAsStream("/reports/AllEmployees.jrxml");
+            InputStream detailsStream = getClass().getResourceAsStream("/reports/EmployeeDetails.jrxml");
 
-        InputStream allStream = getClass().getResourceAsStream("/reports/AllEmployees.jrxml");
-
-        InputStream detailsStream = getClass().getResourceAsStream("/reports/EmployeeDetails.jrxml");
-
-        allEmployeesReport = JasperCompileManager.compileReport(allStream);
-        employeeDetailsReport = JasperCompileManager.compileReport(detailsStream);
+            allEmployeesReport = JasperCompileManager.compileReport(allStream);
+            employeeDetailsReport = JasperCompileManager.compileReport(detailsStream);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
