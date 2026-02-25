@@ -14,8 +14,6 @@ public interface PersonRepository extends JpaRepository<Person, String> {
     @Query(value = "SELECT * FROM get_employee_by_id(:employeeId)", nativeQuery = true)
     Optional<EmployeeReportProjection> getEmployeeByIdFromFunction(@Param("employeeId") String employeeId);
 
-    @Query("SELECT p FROM Person p " +
-            "LEFT JOIN FETCH p.personDetails " +
-            "LEFT JOIN FETCH p.addresses")
+    @Query("SELECT p FROM Person p LEFT JOIN FETCH p.personDetails LEFT JOIN FETCH p.address")
     List<Person> findAllWithDetails();
 }
