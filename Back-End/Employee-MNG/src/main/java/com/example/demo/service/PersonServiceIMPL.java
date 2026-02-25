@@ -25,7 +25,8 @@ public class PersonServiceIMPL implements PersonService {
     public Person savePerson(PersonRequestDTO dto) {
         Person person = new Person();
         person.setEmployeeId(dto.id != null && !dto.id.isEmpty()
-            ? dto.id : generateEmployeeId());
+                ? dto.id
+                : generateEmployeeId());
         mapDtoToEntity(dto, person);
         return personRepository.save(person);
     }
@@ -40,8 +41,8 @@ public class PersonServiceIMPL implements PersonService {
     @Override
     public EmployeeReportDTO getEmployeeById(String id) {
         EmployeeReportProjection projection = personRepository
-            .getEmployeeByIdFromFunction(id)
-            .orElseThrow(() -> new RuntimeException("Employee not found: " + id));
+                .getEmployeeByIdFromFunction(id)
+                .orElseThrow(() -> new RuntimeException("Employee not found: " + id));
         return mapProjectionToDTO(projection);
     }
 
@@ -58,10 +59,11 @@ public class PersonServiceIMPL implements PersonService {
         personRepository.delete(findPersonEntity(id));
     }
 
-    // ===================== PRIVATE: Fetch JPA entity (for update/delete) =====================
+    // ===================== PRIVATE: Fetch JPA entity (for update/delete)
+    // =====================
     private Person findPersonEntity(String id) {
         return personRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Employee not found: " + id));
+                .orElseThrow(() -> new RuntimeException("Employee not found: " + id));
     }
 
     // ===================== PRIVATE: Map Projection → DTO =====================
@@ -109,7 +111,8 @@ public class PersonServiceIMPL implements PersonService {
 
         if (dto.personDetails != null) {
             PersonDetails pd = person.getPersonDetails() != null
-                ? person.getPersonDetails() : new PersonDetails();
+                    ? person.getPersonDetails()
+                    : new PersonDetails();
             pd.setEmail(dto.personDetails.getEmail());
             pd.setDesignation(dto.personDetails.getDesignation());
             pd.setEmployeeGroup(dto.personDetails.getEmployeeGroup());
@@ -124,7 +127,8 @@ public class PersonServiceIMPL implements PersonService {
 
         if (dto.address != null) {
             Address addr = person.getAddress() != null
-                ? person.getAddress() : new Address();
+                    ? person.getAddress()
+                    : new Address();
             addr.setCountry(dto.address.getCountry());
             addr.setState(dto.address.getState());
             addr.setCity(dto.address.getCity());
