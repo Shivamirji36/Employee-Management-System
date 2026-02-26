@@ -90,42 +90,42 @@
             <!-- Employee ID -->
             <element kind="textField" x="0" y="0" width="72" height="30"
                      fontSize="9.0" blankWhenNull="true" textAdjust="StretchHeight">
-                <expression><![CDATA[$P{employeeId} != null ? $P{employeeId} : ""]]></expression>
+                <expression><![CDATA[$F{employeeId} != null ? $F{employeeId} : ""]]></expression>
             </element>
 
             <!-- Full Name (null-safe concatenation) -->
             <element kind="textField" x="72" y="0" width="138" height="30"
                      fontSize="9.0" blankWhenNull="true" textAdjust="StretchHeight">
                 <expression><![CDATA[
-                    (($P{salutation}  != null && !$P{salutation}.isEmpty())  ? $P{salutation}  + " " : "") +
-                    (($P{firstName}   != null && !$P{firstName}.isEmpty())   ? $P{firstName}   + " " : "") +
-                    (($P{middleName}  != null && !$P{middleName}.isEmpty())  ? $P{middleName}  + " " : "") +
-                    (($P{lastName}    != null && !$P{lastName}.isEmpty())    ? $P{lastName}          : "")
+                    (($F{salutation}  != null && !$F{salutation}.isEmpty())  ? $F{salutation}  + " " : "") +
+                    (($F{firstName}   != null && !$F{firstName}.isEmpty())   ? $F{firstName}   + " " : "") +
+                    (($F{middleName}  != null && !$F{middleName}.isEmpty())  ? $F{middleName}  + " " : "") +
+                    (($F{lastName}    != null && !$F{lastName}.isEmpty())    ? $F{lastName}          : "")
                 ]]></expression>
             </element>
 
-            <element kind="textField" x="210"  y="0" width="69"  height="30" fontSize="9.0" blankWhenNull="true"><expression><![CDATA[$P{gender}]]></expression></element>
-            <element kind="textField" x="279"  y="0" width="69"  height="30" fontSize="9.0" blankWhenNull="true"><expression><![CDATA[$P{dob}]]></expression></element>
-            <element kind="textField" x="348"  y="0" width="69"  height="30" fontSize="9.0" blankWhenNull="true"><expression><![CDATA[$P{mobile}]]></expression></element>
-            <element kind="textField" x="417"  y="0" width="100" height="30" fontSize="9.0" blankWhenNull="true"><expression><![CDATA[$P{email}]]></expression></element>
-            <element kind="textField" x="517"  y="0" width="100" height="30" fontSize="9.0" blankWhenNull="true"><expression><![CDATA[$P{designation}]]></expression></element>
-            <element kind="textField" x="617"  y="0" width="100" height="30" fontSize="9.0" blankWhenNull="true"><expression><![CDATA[$P{employeeGroup}]]></expression></element>
-            <element kind="textField" x="717"  y="0" width="100" height="30" fontSize="9.0" blankWhenNull="true"><expression><![CDATA[$P{reportingManager}]]></expression></element>
-            <element kind="textField" x="817"  y="0" width="100" height="30" fontSize="9.0" blankWhenNull="true"><expression><![CDATA[$P{department}]]></expression></element>
-            <element kind="textField" x="917"  y="0" width="100" height="30" fontSize="9.0" blankWhenNull="true"><expression><![CDATA[$P{status}]]></expression></element>
-            <element kind="textField" x="1017" y="0" width="100" height="30" fontSize="9.0" blankWhenNull="true"><expression><![CDATA[$P{relievingDate}]]></expression></element>
-            <element kind="textField" x="1117" y="0" width="100" height="30" fontSize="9.0" blankWhenNull="true"><expression><![CDATA[$P{site}]]></expression></element>
-            <element kind="textField" x="1217" y="0" width="83"  height="30" fontSize="9.0" blankWhenNull="true"><expression><![CDATA[$P{city}]]></expression></element>
-            <element kind="textField" x="1300" y="0" width="80"  height="30" fontSize="9.0" blankWhenNull="true"><expression><![CDATA[$P{state}]]></expression></element>
-            <element kind="textField" x="1380" y="0" width="60"  height="30" fontSize="9.0" blankWhenNull="true"><expression><![CDATA[$P{country}]]></expression></element>
-            <element kind="textField" x="1440" y="0" width="70"  height="30" fontSize="9.0" blankWhenNull="true"><expression><![CDATA[$P{zipCode}]]></expression></element>
+            <element kind="textField" x="210"  y="0" width="69"  height="30" fontSize="9.0" blankWhenNull="true"><expression><![CDATA[$F{gender}]]></expression></element>
+            <element kind="textField" x="279"  y="0" width="69"  height="30" fontSize="9.0" blankWhenNull="true"><expression><![CDATA[$F{dob}]]></expression></element>
+            <element kind="textField" x="348"  y="0" width="69"  height="30" fontSize="9.0" blankWhenNull="true"><expression><![CDATA[$F{mobile}]]></expression></element>
+            <element kind="textField" x="417"  y="0" width="100" height="30" fontSize="9.0" blankWhenNull="true"><expression><![CDATA[$F{email}]]></expression></element>
+            <element kind="textField" x="517"  y="0" width="100" height="30" fontSize="9.0" blankWhenNull="true"><expression><![CDATA[$F{designation}]]></expression></element>
+            <element kind="textField" x="617"  y="0" width="100" height="30" fontSize="9.0" blankWhenNull="true"><expression><![CDATA[$F{employeeGroup}]]></expression></element>
+            <element kind="textField" x="717"  y="0" width="100" height="30" fontSize="9.0" blankWhenNull="true"><expression><![CDATA[$F{reportingManager}]]></expression></element>
+            <element kind="textField" x="817"  y="0" width="100" height="30" fontSize="9.0" blankWhenNull="true"><expression><![CDATA[$F{department}]]></expression></element>
+            <element kind="textField" x="917"  y="0" width="100" height="30" fontSize="9.0" blankWhenNull="true"><expression><![CDATA[$F{status}]]></expression></element>
+            <element kind="textField" x="1017" y="0" width="100" height="30" fontSize="9.0" blankWhenNull="true"><expression><![CDATA[$F{relievingDate}]]></expression></element>
+            <element kind="textField" x="1117" y="0" width="100" height="30" fontSize="9.0" blankWhenNull="true"><expression><![CDATA[$F{site}]]></expression></element>
+            <element kind="textField" x="1217" y="0" width="83"  height="30" fontSize="9.0" blankWhenNull="true"><expression><![CDATA[$F{city}]]></expression></element>
+            <element kind="textField" x="1300" y="0" width="80"  height="30" fontSize="9.0" blankWhenNull="true"><expression><![CDATA[$F{state}]]></expression></element>
+            <element kind="textField" x="1380" y="0" width="60"  height="30" fontSize="9.0" blankWhenNull="true"><expression><![CDATA[$F{country}]]></expression></element>
+            <element kind="textField" x="1440" y="0" width="70"  height="30" fontSize="9.0" blankWhenNull="true"><expression><![CDATA[$F{zipCode}]]></expression></element>
 
             <!-- Address (null-safe) -->
             <element kind="textField" x="1510" y="0" width="100" height="30"
                      fontSize="9.0" blankWhenNull="true" textAdjust="StretchHeight">
                 <expression><![CDATA[
-                    (($P{addressLine1} != null && !$P{addressLine1}.isEmpty()) ? $P{addressLine1} : "") +
-                    (($P{addressLine2} != null && !$P{addressLine2}.isEmpty()) ? " " + $P{addressLine2} : "")
+                    (($F{addressLine1} != null && !$F{addressLine1}.isEmpty()) ? $F{addressLine1} : "") +
+                    (($F{addressLine2} != null && !F{addressLine2}.isEmpty()) ? " " + $F{addressLine2} : "")
                 ]]></expression>
             </element>
 
