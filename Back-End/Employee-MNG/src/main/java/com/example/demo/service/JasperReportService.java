@@ -1,9 +1,13 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.EmployeeReportDTO;
+import com.example.demo.model.Address;
+import com.example.demo.model.Person;
+import com.example.demo.model.PersonDetails;
 
 import jakarta.annotation.PostConstruct;
 import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
 
 import org.slf4j.Logger;
@@ -11,9 +15,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import javax.sql.DataSource;
 
 @Service
 public class JasperReportService {
@@ -21,15 +27,12 @@ public class JasperReportService {
     private static final Logger log = LoggerFactory.getLogger(JasperReportService.class);
 
     private final PersonService personService;
-    private final DataSource dataSource; // ✅ Fix 4: now final
 
-    // Declared at top for clarity
     private JasperReport allEmployeesReport;
     private JasperReport employeeDetailsReport;
 
-    public JasperReportService(PersonService personService, DataSource dataSource) {
+    public JasperReportService(PersonService personService) {
         this.personService = personService;
-        this.dataSource = dataSource;
     }
 
     // ─────────────────────────────────────────────────────
@@ -43,7 +46,7 @@ public class JasperReportService {
     }
 
     private JasperReport compileReport(String classpathPath) {
-        // ✅ Try loading pre-compiled .jasper first (faster + less memory)
+        // Try loading pre-compiled .jasper first (faster + less memory)
         String jasperPath = classpathPath.replace(".jrxml", ".jasper");
         InputStream jasperStream = getClass().getResourceAsStream(jasperPath);
 
@@ -76,7 +79,6 @@ public class JasperReportService {
     public byte[] generateEmployeeReport(String employeeId) throws Exception {
         EmployeeReportDTO emp = personService.getEmployeeById(employeeId);
 
-        // ✅ Fix 3: null check — returns clean 404-able exception instead of NPE
         if (emp == null) {
             throw new IllegalArgumentException("Employee not found: " + employeeId);
         }
@@ -121,13 +123,59 @@ public class JasperReportService {
     public byte[] generateAllEmployeesReport() throws Exception {
         log.info("Generating all employees report");
 
-        try (var connection = dataSource.getConnection()) {
-            JasperPrint jasperPrint = JasperFillManager.fillReport(
-                    allEmployeesReport,
-                    new HashMap<>(),
-                    connection);
-            return JasperExportManager.exportReportToPdf(jasperPrint);
+        // 1. Fetch all employees via existing service
+        List<Person> employees = personService.getAllEmployees();
+
+        // 2. Map each Person (+ nested PersonDetails + Address) into a flat row
+        Collection<Map<String, ?>> dataList = new ArrayList<>();
+        for (Person emp : employees) {
+            PersonDetails details = emp.getPersonDetails(); // may be null
+            Address address = emp.getAddress(); // may be null
+
+            Map<String, Object> row = new HashMap<>();
+
+            // From Person
+            row.put("employeeId", nullSafe(emp.getEmployeeId()));
+            row.put("salutation", nullSafe(emp.getSalutation()));
+            row.put("firstName", nullSafe(emp.getFirstName()));
+            row.put("middleName", nullSafe(emp.getMiddleName()));
+            row.put("lastName", nullSafe(emp.getLastName()));
+            row.put("gender", nullSafe(emp.getGender()));
+            row.put("dob", emp.getDob() != null ? emp.getDob().toString() : "");
+            row.put("mobile", nullSafe(emp.getMobile()));
+
+            // From PersonDetails (null-safe)
+            row.put("email", details != null ? nullSafe(details.getEmail()) : "");
+            row.put("designation", details != null ? nullSafe(details.getDesignation()) : "");
+            row.put("employeeGroup", details != null ? nullSafe(details.getEmployeeGroup()) : "");
+            row.put("reportingManager", details != null ? nullSafe(details.getReportingManager()) : "");
+            row.put("department", details != null ? nullSafe(details.getDepartment()) : "");
+            row.put("status", details != null ? nullSafe(details.getStatus()) : "");
+            row.put("relievingDate", details != null && details.getRelievingDate() != null
+                    ? details.getRelievingDate().toString()
+                    : "");
+            row.put("site", details != null ? nullSafe(details.getSite()) : "");
+
+            // From Address (null-safe)
+            row.put("country", address != null ? nullSafe(address.getCountry()) : "");
+            row.put("state", address != null ? nullSafe(address.getState()) : "");
+            row.put("city", address != null ? nullSafe(address.getCity()) : "");
+            row.put("zipCode", address != null ? nullSafe(address.getZipCode()) : "");
+            row.put("addressLine1", address != null ? nullSafe(address.getAddressLine1()) : "");
+            row.put("addressLine2", address != null ? nullSafe(address.getAddressLine2()) : "");
+
+            dataList.add(row);
         }
+
+        // 3. Wrap in datasource and fill report
+        JRMapCollectionDataSource dataSource = new JRMapCollectionDataSource(dataList);
+
+        JasperPrint jasperPrint = JasperFillManager.fillReport(
+                allEmployeesReport,
+                new HashMap<>(),
+                dataSource);
+
+        return JasperExportManager.exportReportToPdf(jasperPrint);
     }
 
     // ─────────────────────────────────────────────────────

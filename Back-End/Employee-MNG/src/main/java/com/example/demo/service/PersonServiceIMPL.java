@@ -34,7 +34,7 @@ public class PersonServiceIMPL implements PersonService {
     // ===================== GET ALL =====================
     @Override
     public List<Person> getAllEmployees() {
-        return personRepository.findAll();
+        return personRepository.findAllWithDetails(); // ← was findAll()
     }
 
     // ===================== GET BY ID (DB function) =====================
