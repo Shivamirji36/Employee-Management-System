@@ -1,126 +1,151 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport name="IndividualEmployee"
+<jasperReport name="EmployeeDetails"
     language="java"
-    pageWidth="595"
-    pageHeight="760"
-    whenNoDataType="AllSectionsNoDetail"
-    columnWidth="555"
+    columnCount="1"
+    pageWidth="1650"
+    pageHeight="842"
+    columnWidth="1610"
     leftMargin="20"
     rightMargin="20"
     topMargin="20"
     bottomMargin="20"
     ignorePagination="true"
+    whenNoDataType="AllSectionsNoDetail"
     whenResourceMissingType="Empty"
-    uuid="21a0f6a8-51d3-4f4f-ae4f-3855f0af1e0f">
+    uuid="d5495170-9fc8-427d-b523-24beb682fec1">
 
-    <!-- PARAMETERS -->
-    <parameter name="employeeId" class="java.lang.String"/>
-    <parameter name="salutation" class="java.lang.String"/>
-    <parameter name="firstName" class="java.lang.String"/>
-    <parameter name="middleName" class="java.lang.String"/>
-    <parameter name="lastName" class="java.lang.String"/>
-    <parameter name="gender" class="java.lang.String"/>
-    <parameter name="dob" class="java.lang.String"/>
-    <parameter name="mobile" class="java.lang.String"/>
-    <parameter name="email" class="java.lang.String"/>
-    <parameter name="designation" class="java.lang.String"/>
-    <parameter name="employeeGroup" class="java.lang.String"/>
-    <parameter name="reportingManager" class="java.lang.String"/>
-    <parameter name="department" class="java.lang.String"/>
-    <parameter name="status" class="java.lang.String"/>
-    <parameter name="relievingDate" class="java.lang.String"/>
-    <parameter name="site" class="java.lang.String"/>
-    <parameter name="country" class="java.lang.String"/>
-    <parameter name="state" class="java.lang.String"/>
-    <parameter name="city" class="java.lang.String"/>
-    <parameter name="zipCode" class="java.lang.String"/>
-    <parameter name="addressLine1" class="java.lang.String"/>
-    <parameter name="addressLine2" class="java.lang.String"/>
-
-    <query language="sql"><![CDATA[]]></query>
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!--                    PARAMETERS                       -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <parameter name="employeeId"       class="java.lang.String"><defaultValueExpression><![CDATA[""]]></defaultValueExpression></parameter>
+    <parameter name="salutation"       class="java.lang.String"><defaultValueExpression><![CDATA[""]]></defaultValueExpression></parameter>
+    <parameter name="firstName"        class="java.lang.String"><defaultValueExpression><![CDATA[""]]></defaultValueExpression></parameter>
+    <parameter name="middleName"       class="java.lang.String"><defaultValueExpression><![CDATA[""]]></defaultValueExpression></parameter>
+    <parameter name="lastName"         class="java.lang.String"><defaultValueExpression><![CDATA[""]]></defaultValueExpression></parameter>
+    <parameter name="gender"           class="java.lang.String"><defaultValueExpression><![CDATA[""]]></defaultValueExpression></parameter>
+    <parameter name="dob"              class="java.lang.String"><defaultValueExpression><![CDATA[""]]></defaultValueExpression></parameter>
+    <parameter name="mobile"           class="java.lang.String"><defaultValueExpression><![CDATA[""]]></defaultValueExpression></parameter>
+    <parameter name="email"            class="java.lang.String"><defaultValueExpression><![CDATA[""]]></defaultValueExpression></parameter>
+    <parameter name="designation"      class="java.lang.String"><defaultValueExpression><![CDATA[""]]></defaultValueExpression></parameter>
+    <parameter name="employeeGroup"    class="java.lang.String"><defaultValueExpression><![CDATA[""]]></defaultValueExpression></parameter>
+    <parameter name="reportingManager" class="java.lang.String"><defaultValueExpression><![CDATA[""]]></defaultValueExpression></parameter>
+    <parameter name="department"       class="java.lang.String"><defaultValueExpression><![CDATA[""]]></defaultValueExpression></parameter>
+    <parameter name="status"           class="java.lang.String"><defaultValueExpression><![CDATA[""]]></defaultValueExpression></parameter>
+    <parameter name="relievingDate"    class="java.lang.String"><defaultValueExpression><![CDATA[""]]></defaultValueExpression></parameter>
+    <parameter name="site"             class="java.lang.String"><defaultValueExpression><![CDATA[""]]></defaultValueExpression></parameter>
+    <parameter name="country"          class="java.lang.String"><defaultValueExpression><![CDATA[""]]></defaultValueExpression></parameter>
+    <parameter name="state"            class="java.lang.String"><defaultValueExpression><![CDATA[""]]></defaultValueExpression></parameter>
+    <parameter name="city"             class="java.lang.String"><defaultValueExpression><![CDATA[""]]></defaultValueExpression></parameter>
+    <parameter name="zipCode"          class="java.lang.String"><defaultValueExpression><![CDATA[""]]></defaultValueExpression></parameter>
+    <parameter name="addressLine1"     class="java.lang.String"><defaultValueExpression><![CDATA[""]]></defaultValueExpression></parameter>
+    <parameter name="addressLine2"     class="java.lang.String"><defaultValueExpression><![CDATA[""]]></defaultValueExpression></parameter>
 
     <background splitType="Stretch"/>
 
-    <!-- TITLE -->
-    <title height="121" splitType="Stretch">
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!--                      TITLE                          -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <title height="97" splitType="Stretch">
 
-        <element kind="image" x="0" y="0" width="120" height="60"
-                 onErrorType="Blank" isUsingCache="true">
-            <expression><![CDATA[getClass().getResourceAsStream("/reports/hospital.png")]]></expression>
+        <!-- Background bar -->
+        <element kind="rectangle" x="0" y="0" width="1610" height="50"
+                 forecolor="#2C3E50" backcolor="#2C3E50" mode="Opaque"/>
+
+        <!-- Report title -->
+        <element kind="staticText" x="20" y="10" width="600" height="30"
+                 fontSize="20.0" bold="true" forecolor="#FFFFFF" mode="Transparent">
+            <text><![CDATA[Employee Registration Report]]></text>
         </element>
 
-        <element kind="staticText" x="300" y="0" width="200" height="78"
-                 fontSize="12.5" hTextAlign="Left">
-            <text><![CDATA[Your Company Pvt Ltd
-New BEL Road, Bangalore
-Contact: +91-XXXXXXXXXX
-Email: hr@company.com]]></text>
-        </element>
+        <!-- Column headers row -->
+        <element kind="rectangle" x="0" y="55" width="1610" height="25"
+                 forecolor="#BDC3C7" backcolor="#BDC3C7" mode="Opaque"/>
 
-        <element kind="rectangle" x="270" y="0" width="1" height="78"/>
-
-        <element kind="staticText" x="0" y="90" width="555" height="30"
-                 fontSize="16.0" bold="true" hTextAlign="Center">
-            <text><![CDATA[EMPLOYEE DETAILS]]></text>
-        </element>
-
-        <element kind="line" x="0" y="120" width="550" height="1"/>
-
+        <element kind="staticText" x="0"    y="57" width="72"  height="20" fontSize="9.0" bold="true"><text><![CDATA[EMP ID]]></text></element>
+        <element kind="staticText" x="72"   y="57" width="138" height="20" fontSize="9.0" bold="true"><text><![CDATA[FULL NAME]]></text></element>
+        <element kind="staticText" x="210"  y="57" width="69"  height="20" fontSize="9.0" bold="true"><text><![CDATA[GENDER]]></text></element>
+        <element kind="staticText" x="279"  y="57" width="69"  height="20" fontSize="9.0" bold="true"><text><![CDATA[DOB]]></text></element>
+        <element kind="staticText" x="348"  y="57" width="69"  height="20" fontSize="9.0" bold="true"><text><![CDATA[MOBILE]]></text></element>
+        <element kind="staticText" x="417"  y="57" width="100" height="20" fontSize="9.0" bold="true"><text><![CDATA[EMAIL]]></text></element>
+        <element kind="staticText" x="517"  y="57" width="100" height="20" fontSize="9.0" bold="true"><text><![CDATA[DESIGNATION]]></text></element>
+        <element kind="staticText" x="617"  y="57" width="100" height="20" fontSize="9.0" bold="true"><text><![CDATA[GROUP]]></text></element>
+        <element kind="staticText" x="717"  y="57" width="100" height="20" fontSize="9.0" bold="true"><text><![CDATA[MANAGER]]></text></element>
+        <element kind="staticText" x="817"  y="57" width="100" height="20" fontSize="9.0" bold="true"><text><![CDATA[DEPARTMENT]]></text></element>
+        <element kind="staticText" x="917"  y="57" width="100" height="20" fontSize="9.0" bold="true"><text><![CDATA[STATUS]]></text></element>
+        <element kind="staticText" x="1017" y="57" width="100" height="20" fontSize="9.0" bold="true"><text><![CDATA[RELIEVING DATE]]></text></element>
+        <element kind="staticText" x="1117" y="57" width="100" height="20" fontSize="9.0" bold="true"><text><![CDATA[SITE]]></text></element>
+        <element kind="staticText" x="1217" y="57" width="83"  height="20" fontSize="9.0" bold="true"><text><![CDATA[CITY]]></text></element>
+        <element kind="staticText" x="1300" y="57" width="80"  height="20" fontSize="9.0" bold="true"><text><![CDATA[STATE]]></text></element>
+        <element kind="staticText" x="1380" y="57" width="60"  height="20" fontSize="9.0" bold="true"><text><![CDATA[COUNTRY]]></text></element>
+        <element kind="staticText" x="1440" y="57" width="70"  height="20" fontSize="9.0" bold="true"><text><![CDATA[ZIP]]></text></element>
+        <element kind="staticText" x="1510" y="57" width="100" height="20" fontSize="9.0" bold="true"><text><![CDATA[ADDRESS]]></text></element>
     </title>
 
-    <pageHeader height="5" splitType="Stretch"/>
-    <columnHeader splitType="Stretch"/>
-
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!--                   DETAIL BAND                       -->
+    <!-- ═══════════════════════════════════════════════════ -->
     <detail>
-        <band height="501" splitType="Stretch">
+        <band height="35" splitType="Stretch">
 
-            <!-- CONTENT UNCHANGED -->
-            <!-- All textFields and layout exactly as you provided -->
-            <!-- No visual modification -->
+            <!-- Employee ID -->
+            <element kind="textField" x="0" y="0" width="72" height="30"
+                     fontSize="9.0" isBlankWhenNull="true" textAdjust="StretchHeight">
+                <expression><![CDATA[$P{employeeId} != null ? $P{employeeId} : ""]]></expression>
+            </element>
+
+            <!-- Full Name (null-safe concatenation) -->
+            <element kind="textField" x="72" y="0" width="138" height="30"
+                     fontSize="9.0" isBlankWhenNull="true" textAdjust="StretchHeight">
+                <expression><![CDATA[
+                    (($P{salutation}  != null && !$P{salutation}.isEmpty())  ? $P{salutation}  + " " : "") +
+                    (($P{firstName}   != null && !$P{firstName}.isEmpty())   ? $P{firstName}   + " " : "") +
+                    (($P{middleName}  != null && !$P{middleName}.isEmpty())  ? $P{middleName}  + " " : "") +
+                    (($P{lastName}    != null && !$P{lastName}.isEmpty())    ? $P{lastName}          : "")
+                ]]></expression>
+            </element>
+
+            <element kind="textField" x="210"  y="0" width="69"  height="30" fontSize="9.0" isBlankWhenNull="true"><expression><![CDATA[$P{gender}]]></expression></element>
+            <element kind="textField" x="279"  y="0" width="69"  height="30" fontSize="9.0" isBlankWhenNull="true"><expression><![CDATA[$P{dob}]]></expression></element>
+            <element kind="textField" x="348"  y="0" width="69"  height="30" fontSize="9.0" isBlankWhenNull="true"><expression><![CDATA[$P{mobile}]]></expression></element>
+            <element kind="textField" x="417"  y="0" width="100" height="30" fontSize="9.0" isBlankWhenNull="true"><expression><![CDATA[$P{email}]]></expression></element>
+            <element kind="textField" x="517"  y="0" width="100" height="30" fontSize="9.0" isBlankWhenNull="true"><expression><![CDATA[$P{designation}]]></expression></element>
+            <element kind="textField" x="617"  y="0" width="100" height="30" fontSize="9.0" isBlankWhenNull="true"><expression><![CDATA[$P{employeeGroup}]]></expression></element>
+            <element kind="textField" x="717"  y="0" width="100" height="30" fontSize="9.0" isBlankWhenNull="true"><expression><![CDATA[$P{reportingManager}]]></expression></element>
+            <element kind="textField" x="817"  y="0" width="100" height="30" fontSize="9.0" isBlankWhenNull="true"><expression><![CDATA[$P{department}]]></expression></element>
+            <element kind="textField" x="917"  y="0" width="100" height="30" fontSize="9.0" isBlankWhenNull="true"><expression><![CDATA[$P{status}]]></expression></element>
+            <element kind="textField" x="1017" y="0" width="100" height="30" fontSize="9.0" isBlankWhenNull="true"><expression><![CDATA[$P{relievingDate}]]></expression></element>
+            <element kind="textField" x="1117" y="0" width="100" height="30" fontSize="9.0" isBlankWhenNull="true"><expression><![CDATA[$P{site}]]></expression></element>
+            <element kind="textField" x="1217" y="0" width="83"  height="30" fontSize="9.0" isBlankWhenNull="true"><expression><![CDATA[$P{city}]]></expression></element>
+            <element kind="textField" x="1300" y="0" width="80"  height="30" fontSize="9.0" isBlankWhenNull="true"><expression><![CDATA[$P{state}]]></expression></element>
+            <element kind="textField" x="1380" y="0" width="60"  height="30" fontSize="9.0" isBlankWhenNull="true"><expression><![CDATA[$P{country}]]></expression></element>
+            <element kind="textField" x="1440" y="0" width="70"  height="30" fontSize="9.0" isBlankWhenNull="true"><expression><![CDATA[$P{zipCode}]]></expression></element>
+
+            <!-- Address (null-safe) -->
+            <element kind="textField" x="1510" y="0" width="100" height="30"
+                     fontSize="9.0" isBlankWhenNull="true" textAdjust="StretchHeight">
+                <expression><![CDATA[
+                    (($P{addressLine1} != null && !$P{addressLine1}.isEmpty()) ? $P{addressLine1} : "") +
+                    (($P{addressLine2} != null && !$P{addressLine2}.isEmpty()) ? " " + $P{addressLine2} : "")
+                ]]></expression>
+            </element>
+
+            <!-- Divider line between rows -->
+            <element kind="line" x="0" y="32" width="1610" height="1"
+                     forecolor="#EEEEEE"/>
 
         </band>
     </detail>
 
-    <columnFooter splitType="Stretch"/>
-    <pageFooter splitType="Stretch"/>
-
-    <summary height="90" splitType="Stretch">
-
-        <element kind="staticText" x="0" y="0" width="200" height="20"
-                 fontSize="9.0" hTextAlign="Center">
-            <text><![CDATA[Our Accreditations]]></text>
-        </element>
-
-        <element kind="staticText" x="340" y="0" width="170" height="19"
-                 hTextAlign="Center">
-            <text><![CDATA[In Affiliation With]]></text>
-        </element>
-
-        <element kind="image" x="0" y="30" width="50" height="50"
-                 onErrorType="Blank" isUsingCache="true">
-            <expression><![CDATA[getClass().getResourceAsStream("/reports/joint.jpg")]]></expression>
-        </element>
-
-        <element kind="image" x="80" y="30" width="50" height="50"
-                 onErrorType="Blank" isUsingCache="true">
-            <expression><![CDATA[getClass().getResourceAsStream("/reports/nabh.png")]]></expression>
-        </element>
-
-        <element kind="image" x="150" y="30" width="50" height="50"
-                 onErrorType="Blank" isUsingCache="true">
-            <expression><![CDATA[getClass().getResourceAsStream("/reports/heart.png")]]></expression>
-        </element>
-
-        <element kind="image" x="360" y="31" width="50" height="50"
-                 onErrorType="Blank" isUsingCache="true">
-            <expression><![CDATA[getClass().getResourceAsStream("/reports/hospital.png")]]></expression>
-        </element>
-
-        <element kind="image" x="440" y="30" width="50" height="50"
-                 onErrorType="Blank" isUsingCache="true">
-            <expression><![CDATA[getClass().getResourceAsStream("/reports/hospital1.png")]]></expression>
-        </element>
-
-    </summary>
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!--              NO DATA MESSAGE                        -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <noData>
+        <band height="50">
+            <element kind="staticText" x="0" y="10" width="1610" height="30"
+                     fontSize="14.0" hTextAlign="Center" forecolor="#E74C3C">
+                <text><![CDATA[No employee data available.]]></text>
+            </element>
+        </band>
+    </noData>
 
 </jasperReport>

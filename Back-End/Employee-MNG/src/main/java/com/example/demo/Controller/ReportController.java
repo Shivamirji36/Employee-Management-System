@@ -2,9 +2,8 @@ package com.example.demo.Controller;
 
 import com.example.demo.service.JasperReportService;
 
-import java.time.LocalDate;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,40 +11,65 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/employees")
 public class ReportController {
 
-    @Autowired
-    private JasperReportService jasperReportService;
+    private static final Logger log = LoggerFactory.getLogger(ReportController.class);
 
+    // ✅ Fix 1: Constructor injection — testable, no hidden dependencies
+    private final JasperReportService jasperReportService;
+
+    public ReportController(JasperReportService jasperReportService) {
+        this.jasperReportService = jasperReportService;
+    }
+
+    // ─────────────────────────────────────────────────────
+    // GET /api/employees/report/{employeeId}
+    // Download individual employee PDF report
+    // ─────────────────────────────────────────────────────
     @GetMapping("/report/{employeeId}")
     public ResponseEntity<byte[]> downloadReport(@PathVariable String employeeId) {
         try {
             byte[] pdfBytes = jasperReportService.generateEmployeeReport(employeeId);
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_PDF);
-            // "attachment" = force download | "inline" = open in browser
-            headers.setContentDispositionFormData("attachment", "employee_" + employeeId + ".pdf");
-            headers.setContentLength(pdfBytes.length);
-
             return ResponseEntity.ok()
-                    .headers(headers)
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=employee_" + employeeId + ".pdf")
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .contentLength(pdfBytes.length)
                     .body(pdfBytes);
 
+        } catch (IllegalArgumentException e) {
+            // ✅ Employee not found → 404 (thrown from service when emp == null)
+            log.warn("Employee not found for report: {}", employeeId);
+            return ResponseEntity.notFound().build();
+
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(e.getMessage().getBytes());
+            // ✅ Fix 2: proper logger visible in Render logs
+            log.error("Failed to generate report for employee: {}", employeeId, e);
+
+            // ✅ Fix 3: never leak internal error message to client
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
+    // ─────────────────────────────────────────────────────
+    // GET /api/employees/report
+    // Download all employees PDF report
+    // ─────────────────────────────────────────────────────
     @GetMapping("/report")
-    public ResponseEntity<byte[]> generateReport() throws Exception {
+    public ResponseEntity<byte[]> generateReport() { // ✅ removed "throws Exception"
+        try {
+            byte[] pdf = jasperReportService.generateAllEmployeesReport();
 
-        byte[] pdf = jasperReportService.generateAllEmployeesReport();
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=all_employees.pdf")
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .contentLength(pdf.length)
+                    .body(pdf);
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=employees.pdf")
-                .contentType(MediaType.APPLICATION_PDF)
-                .body(pdf);
+        } catch (Exception e) {
+            // ✅ Fix 4: was completely unhandled before
+            log.error("Failed to generate all employees report", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }
