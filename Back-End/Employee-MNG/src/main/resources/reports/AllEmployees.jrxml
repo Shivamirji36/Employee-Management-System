@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport name="EmployeeDetails"
+<jasperReport name="AllEmployees"
     language="java"
     columnCount="1"
     pageWidth="1650"
