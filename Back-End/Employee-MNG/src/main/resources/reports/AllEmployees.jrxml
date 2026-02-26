@@ -139,13 +139,12 @@
     <!-- ═══════════════════════════════════════════════════ -->
     <!--              NO DATA MESSAGE                        -->
     <!-- ═══════════════════════════════════════════════════ -->
-    <noData>
-        <band height="50">
-            <element kind="staticText" x="0" y="10" width="1610" height="30"
-                     fontSize="14.0" hTextAlign="Center" forecolor="#E74C3C">
-                <text><![CDATA[No employee data available.]]></text>
-            </element>
-        </band>
+    <!-- ✅ JasperReports 7.x: noData IS the band — no nested <band> tag -->
+    <noData height="50" splitType="Stretch">
+        <element kind="staticText" x="0" y="10" width="1610" height="30"
+                 fontSize="14.0" hTextAlign="Center" forecolor="#E74C3C">
+            <text><![CDATA[No employee data available.]]></text>
+        </element>
     </noData>
 
 </jasperReport>
