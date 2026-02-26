@@ -81,7 +81,7 @@ export class EmployeeService {
   }
 
   exportAllEmployeesReport(): Observable<Blob> {
-    return this.http.get(`${environment.apiUrl}/api/employees/report`, {
+    return this.http.get(`${environment.apiUrl}api/employees/report`, {
       responseType: 'blob',
     });
   }
