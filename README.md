@@ -22,7 +22,7 @@ A full-stack **Employee Management System** built with **Angular + Spring Boot +
 ![Edit Employee Dialog](Screenshots/editEmployee.png)
 
 ### Individual Employee PDF Report
-![Individual Employee Export PDF](Screenshots/afterPrintEmployee.jpg)
+![Individual Employee Export PDF](Screenshots/afterPrintEmployee.png)
 
 ### All Employees Export Report
 ![All Employees Export PDF](Screenshots/exportAllEmployees.png)
