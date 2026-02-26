@@ -12,7 +12,7 @@
     whenNoDataType="AllSectionsNoDetail"
     uuid="d5495170-9fc8-427d-b523-24beb682fec1">
 
-    <queryString>
+        <query>
         <![CDATA[
         SELECT 
             p.employee_id,
@@ -41,7 +41,7 @@
         LEFT JOIN person_details pd ON p.employee_id = pd.employee_id
         LEFT JOIN address a ON p.employee_id = a.employee_id
         ]]>
-    </queryString>
+    </query>
 
     <!-- FIELDS EXACTLY SAME AS QUERY -->
     <field name="employee_id" class="java.lang.String"/>
