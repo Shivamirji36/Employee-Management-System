@@ -48,10 +48,10 @@
     <!-- ═══════════════════════════════════════════════════ -->
     <title height="121" splitType="Stretch">
 
-        <!-- Company Logo — onErrorType="Blank" means it won't crash if image missing -->
-        <element kind="image" x="0" y="0" width="120" height="60"
-                 onErrorType="Blank" usingCache="true" scaleImage="RetainShape">
-            <expression><![CDATA[getClass().getResourceAsStream("/reports/hospital.png")]]></expression>
+        <!-- Logo replaced with text to avoid OOM on free-tier servers -->
+        <element kind="staticText" x="0" y="10" width="120" height="40"
+                 fontSize="14.0" bold="true" forecolor="#2C3E50" hTextAlign="Center">
+            <text><![CDATA[EMS]]></text>
         </element>
 
         <!-- Company Info -->
@@ -235,35 +235,15 @@ Email: hr@company.com]]></text>
     <!--     SUMMARY — Accreditation logos                   -->
     <!--     onErrorType="Blank" = won't crash if missing    -->
     <!-- ═══════════════════════════════════════════════════ -->
-    <summary height="90" splitType="Stretch">
+    <summary height="40" splitType="Stretch">
 
         <element kind="line" x="0" y="0" width="555" height="1" forecolor="#CCCCCC"/>
 
-        <element kind="staticText" x="0" y="5" width="200" height="20"
-                 fontSize="9.0" bold="true" hTextAlign="Center" forecolor="#555555">
-            <text><![CDATA[Our Accreditations]]></text>
-        </element>
-
-        <element kind="staticText" x="340" y="5" width="170" height="19"
-                 fontSize="9.0" bold="true" hTextAlign="Center" forecolor="#555555">
-            <text><![CDATA[In Affiliation With]]></text>
-        </element>
-
-        <!-- Accreditation logos — all Blank on error, won't break PDF generation -->
-        <element kind="image" x="0"   y="30" width="50" height="50" onErrorType="Blank" usingCache="true" scaleImage="RetainShape">
-            <expression><![CDATA[getClass().getResourceAsStream("/reports/joint.jpg")]]></expression>
-        </element>
-        <element kind="image" x="80"  y="30" width="50" height="50" onErrorType="Blank" usingCache="true" scaleImage="RetainShape">
-            <expression><![CDATA[getClass().getResourceAsStream("/reports/nabh.png")]]></expression>
-        </element>
-        <element kind="image" x="150" y="30" width="50" height="50" onErrorType="Blank" usingCache="true" scaleImage="RetainShape">
-            <expression><![CDATA[getClass().getResourceAsStream("/reports/heart.png")]]></expression>
-        </element>
-        <element kind="image" x="360" y="31" width="50" height="50" onErrorType="Blank" usingCache="true" scaleImage="RetainShape">
-            <expression><![CDATA[getClass().getResourceAsStream("/reports/hospital.png")]]></expression>
-        </element>
-        <element kind="image" x="440" y="30" width="50" height="50" onErrorType="Blank" usingCache="true" scaleImage="RetainShape">
-            <expression><![CDATA[getClass().getResourceAsStream("/reports/hospital1.png")]]></expression>
+        <!-- Images removed — PNG loading causes OutOfMemoryError on 512MB free-tier servers -->
+        <!-- To re-enable: upgrade to a paid plan with 1GB+ RAM and restore image elements  -->
+        <element kind="staticText" x="0" y="8" width="555" height="20"
+                 fontSize="8.0" hTextAlign="Center" forecolor="#999999">
+            <text><![CDATA[Accreditations: NABH | Joint Commission | Employee Management System]]></text>
         </element>
 
     </summary>
