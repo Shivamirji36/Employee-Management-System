@@ -4,6 +4,8 @@ import com.example.demo.dto.EmployeeReportDTO;
 
 import jakarta.annotation.PostConstruct;
 import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.util.JRLoader;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -36,28 +38,35 @@ public class JasperReportService {
     // ─────────────────────────────────────────────────────
     @PostConstruct
     public void loadReports() {
-        // ✅ Fix 1+2: no silent catch, throws on startup if file missing
         allEmployeesReport = compileReport("/reports/AllEmployees.jrxml");
         employeeDetailsReport = compileReport("/reports/EmployeeDetails.jrxml");
     }
 
     private JasperReport compileReport(String classpathPath) {
-        InputStream stream = getClass().getResourceAsStream(classpathPath);
+        // ✅ Try loading pre-compiled .jasper first (faster + less memory)
+        String jasperPath = classpathPath.replace(".jrxml", ".jasper");
+        InputStream jasperStream = getClass().getResourceAsStream(jasperPath);
 
-        // ✅ Fix 2: explicit null check with clear error message
-        if (stream == null) {
-            throw new IllegalStateException(
-                    "Report template not found on classpath: " + classpathPath +
-                            " — ensure the file is in src/main/resources/reports/");
+        if (jasperStream != null) {
+            try {
+                log.info("Loading pre-compiled report: {}", jasperPath);
+                return (JasperReport) JRLoader.loadObject(jasperStream);
+            } catch (JRException e) {
+                log.warn("Failed to load .jasper, falling back to .jrxml: {}", jasperPath);
+            }
         }
 
+        // Fallback: compile from jrxml
+        InputStream stream = getClass().getResourceAsStream(classpathPath);
+        if (stream == null) {
+            throw new IllegalStateException(
+                    "Report not found on classpath: " + classpathPath);
+        }
         try {
-            JasperReport report = JasperCompileManager.compileReport(stream);
-            log.info("Report compiled successfully: {}", classpathPath); // ✅ Fix 6
-            return report;
+            log.info("Compiling report from jrxml: {}", classpathPath);
+            return JasperCompileManager.compileReport(stream);
         } catch (JRException e) {
-            // ✅ Fix 1: rethrows instead of swallowing — visible in Render logs
-            throw new IllegalStateException("Failed to compile report: " + classpathPath, e);
+            throw new IllegalStateException("Failed to compile: " + classpathPath, e);
         }
     }
 

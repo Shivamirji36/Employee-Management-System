@@ -8,13 +8,19 @@ RUN mvn package -B -DskipTests
 
 FROM amazoncorretto:17-alpine
 
-# Install fontconfig and fonts — required for JasperReports on headless Linux
+# Fonts required for JasperReports on headless Linux
 RUN apk add --no-cache fontconfig ttf-dejavu
 
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
 
-# -Djava.awt.headless=true  → fixes JasperReports crash on Render/Docker (no display)
-# -Djava.awt.fonts          → tells AWT where to find fonts in Alpine
-ENTRYPOINT ["java", "-Djava.awt.headless=true", "-jar", "app.jar"]
+# -Xms: starting heap | -Xmx: max heap
+# -XX:+UseG1GC: better GC for memory-constrained environments
+ENTRYPOINT ["java", \
+    "-Djava.awt.headless=true", \
+    "-Xms256m", \
+    "-Xmx512m", \
+    "-XX:+UseG1GC", \
+    "-XX:MaxGCPauseMillis=200", \
+    "-jar", "app.jar"]
