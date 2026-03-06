@@ -1,1 +1,370 @@
+<button class="snip-btn" [class.active]="isSnipping || showModeSelector" (click)="toggleModeSelector()"
+    title="Take a screenshot or record">
+    <svg class="snip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round">
+        <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" />
+        <circle cx="12" cy="13" r="4" />
+    </svg>
+    <span>{{ isSnipping ? 'Drag to select…' : 'Snip' }}</span>
+</button>
 
+
+<div class="mode-overlay" *ngIf="showModeSelector" (click)="closeModeSelector()">
+    <div class="mode-selector-bar" (click)="$event.stopPropagation()">
+        <p-selectbutton [options]="modeOptions" [(ngModel)]="snipMode" optionLabel="label" optionValue="value"
+            (onChange)="onModeSelect()">
+            <ng-template #item let-item>
+                <i [class]="item.icon"></i>
+            </ng-template>
+        </p-selectbutton>
+    </div>
+</div>
+
+<div class="capture-overlay" *ngIf="isCapturing">
+    <div class="capture-spinner-box">
+        <span class="btn-spinner large"></span>
+        <span class="capture-text">Capturing...</span>
+    </div>
+</div>
+
+
+<div class="rec-overlay" *ngIf="recState === 'selecting' || recState === 'ready'" (mousedown)="onRecMouseDown($event)"
+    (mousemove)="onRecMouseMove($event)" (mouseup)="onRecMouseUp()">
+
+    <!-- Four dark masks around selection -->
+    <div class="mask top" [style.height.px]="recY"></div>
+    <div class="mask bottom" [style.top.px]="recY + recH"></div>
+    <div class="mask left" [style.top.px]="recY" [style.height.px]="recH" [style.width.px]="recX"></div>
+    <div class="mask right" [style.top.px]="recY" [style.height.px]="recH" [style.left.px]="recX + recW"></div>
+
+    <!-- Selection rectangle -->
+    <div class="sel-rect rec-sel" *ngIf="recW > 0" [style.left.px]="recX" [style.top.px]="recY" [style.width.px]="recW"
+        [style.height.px]="recH">
+        <span class="h tl"></span><span class="h tr"></span>
+        <span class="h bl"></span><span class="h br"></span>
+        <div class="sel-size">{{ recW }} × {{ recH }}</div>
+    </div>
+
+    <!-- Ready state: Start + Resize + Cancel — ABOVE or BELOW the selection -->
+    <div class="rec-ready-bar" *ngIf="recState === 'ready' && recW > 0" [style.left.px]="recX + (recW / 2)"
+        [style.top.px]="recBarTop" (mousedown)="$event.stopPropagation()">
+        <button class="rec-btn-start" (click)="recStart()">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14">
+                <circle cx="12" cy="12" r="7" />
+            </svg>
+            Start
+        </button>
+        <button class="rec-btn-resize" (click)="recResize()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <polyline points="15 3 21 3 21 9" />
+                <polyline points="9 21 3 21 3 15" />
+                <line x1="21" y1="3" x2="14" y2="10" />
+                <line x1="3" y1="21" x2="10" y2="14" />
+            </svg>
+            Resize
+        </button>
+        <button class="rec-btn-cancel" (click)="recCancel()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+        </button>
+    </div>
+
+    <!-- Hint -->
+    <div class="overlay-hint" *ngIf="recState === 'selecting'">
+        <kbd>ESC</kbd> cancel &nbsp;·&nbsp; Drag to select recording area
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     VIDEO RECORDING — Countdown Overlay
+════════════════════════════════════════════ -->
+<div class="rec-countdown-overlay" *ngIf="recState === 'countdown'">
+    <div class="rec-countdown-number">{{ recCountdown }}</div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     VIDEO RECORDING — Controls (positioned OUTSIDE recording area)
+════════════════════════════════════════════ -->
+<div class="rec-controls" *ngIf="recState === 'recording' || recState === 'paused'" [style.top.px]="recControlsTop">
+    <!-- Stop button (red dot) -->
+    <button class="rec-ctrl-stop" (click)="recStop()" title="Stop Recording">
+        <span class="rec-dot"></span>
+        Stop
+    </button>
+    <!-- Pause / Resume -->
+    <button class="rec-ctrl-pause" *ngIf="recState === 'recording'" (click)="recPause()" title="Pause">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+            <rect x="6" y="4" width="4" height="16" rx="1" />
+            <rect x="14" y="4" width="4" height="16" rx="1" />
+        </svg>
+    </button>
+    <button class="rec-ctrl-resume" *ngIf="recState === 'paused'" (click)="recResume()" title="Resume">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+            <polygon points="5,3 19,12 5,21" />
+        </svg>
+    </button>
+    <!-- Timer -->
+    <span class="rec-timer" [class.paused]="recState === 'paused'">{{ recTimerDisplay }}</span>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     FULL-SCREEN OVERLAY (while snipping)
+════════════════════════════════════════════ -->
+<div class="snip-overlay" *ngIf="isSnipping" (mousedown)="onMouseDown($event)" (mousemove)="onMouseMove($event)"
+    (mouseup)="onMouseUp()">
+
+    <!-- Four dark masks surrounding the selection -->
+    <div class="mask top" [style.height.px]="selY"></div>
+    <div class="mask bottom" [style.top.px]="selY + selH"></div>
+    <div class="mask left" [style.top.px]="selY" [style.height.px]="selH" [style.width.px]="selX">
+    </div>
+    <div class="mask right" [style.top.px]="selY" [style.height.px]="selH" [style.left.px]="selX + selW">
+    </div>
+
+    <!-- Animated selection rectangle -->
+    <div class="sel-rect" *ngIf="selW > 0" [style.left.px]="selX" [style.top.px]="selY" [style.width.px]="selW"
+        [style.height.px]="selH">
+        <span class="h tl"></span>
+        <span class="h tr"></span>
+        <span class="h bl"></span>
+        <span class="h br"></span>
+        <div class="sel-size">{{ selW }} × {{ selH }}</div>
+    </div>
+
+    <!-- Bottom hint -->
+    <div class="overlay-hint">
+        <kbd>ESC</kbd> cancel &nbsp;·&nbsp; release mouse to capture
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     EDITOR MODAL
+════════════════════════════════════════════ -->
+<div class="editor-backdrop" *ngIf="showEditor" (click.self)="closeEditor()">
+    <div class="editor-modal">
+
+        <!-- ── Header ── -->
+        <div class="editor-header">
+            <div class="editor-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" />
+                </svg>
+                Screenshot Editor
+                <span class="size-chip">{{ canvasW }} × {{ canvasH }}px</span>
+            </div>
+
+            <div class="header-actions">
+                <button class="btn-save" (click)="saveScreenshot()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round">
+                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                        <polyline points="7 10 12 15 17 10" />
+                        <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                    Save PNG
+                </button>
+                <button class="btn-close" (click)="closeEditor()" title="Close">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- ── Toolbar ── -->
+        <div class="editor-toolbar">
+
+            <button class="tool-btn" [class.active]="activeTool === 'pencil'" (click)="selectTool('pencil')"
+                title="Pencil">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <path d="M17 3a2.828 2.828 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+                </svg>
+                Pencil
+            </button>
+
+            <button class="tool-btn" [class.active]="activeTool === 'highlight'" (click)="selectTool('highlight')"
+                title="Highlighter">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <path d="M12 20h9" />
+                    <path d="M16.5 3.5a2.121 2.121 0 013 3l-13 13-4 1 1-4 13-13z" />
+                </svg>
+                Highlight
+            </button>
+
+            <div class="sep"></div>
+
+            <!-- ── Shapes dropdown ── -->
+            <div class="shapes-dropdown-wrapper">
+                <button class="tool-btn" [class.active]="isShapeTool()" (click)="toggleShapesDropdown()" title="Shapes">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <rect x="3" y="3" width="18" height="14" rx="2" />
+                        <circle cx="17" cy="17" r="5" />
+                    </svg>
+                    Shapes
+                    <svg class="chevron" [class.open]="showShapesDropdown" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5">
+                        <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                </button>
+
+                <div class="shapes-dropdown" *ngIf="showShapesDropdown">
+                    <button class="shape-option" [class.active]="activeTool === 'rect'" (click)="pickShape('rect')"
+                        title="Rectangle">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" />
+                        </svg>
+                        <span>Rectangle</span>
+                    </button>
+                    <button class="shape-option" [class.active]="activeTool === 'circle'" (click)="pickShape('circle')"
+                        title="Circle">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10" />
+                        </svg>
+                        <span>Circle</span>
+                    </button>
+                    <button class="shape-option" [class.active]="activeTool === 'line'" (click)="pickShape('line')"
+                        title="Line">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="5" y1="19" x2="19" y2="5" />
+                        </svg>
+                        <span>Line</span>
+                    </button>
+                    <button class="shape-option" [class.active]="activeTool === 'arrow'" (click)="pickShape('arrow')"
+                        title="Arrow">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linejoin="round">
+                            <line x1="5" y1="19" x2="19" y2="5" />
+                            <polyline points="10 5 19 5 19 14" />
+                        </svg>
+                        <span>Arrow</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="sep"></div>
+
+            <!-- Eraser -->
+            <button class="tool-btn" [class.active]="activeTool === 'eraser'" (click)="selectTool('eraser')"
+                title="Eraser — click on any drawing to erase it">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <path d="M20 20H7L3 16a1.41 1.41 0 010-2l9.5-9.5a1.41 1.41 0 012 0L21 11a1.41 1.41 0 010 2L15 19" />
+                    <line x1="18" y1="13" x2="11" y2="6" />
+                </svg>
+                Eraser
+            </button>
+
+            <!-- Reset (beside Eraser) -->
+            <button class="tool-btn" (click)="resetCanvas()" title="Reset — clear all drawings">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <path d="M3 12a9 9 0 109-9 9.75 9.75 0 00-6.74 2.74L3 8" />
+                    <path d="M3 3v5h5" />
+                </svg>
+                Reset
+            </button>
+
+            <div class="sep"></div>
+
+            <!-- Crop -->
+            <button class="tool-btn" [class.active]="activeTool === 'crop'" (click)="selectTool('crop')"
+                title="Crop the screenshot">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <path d="M6 2v14a2 2 0 002 2h14" />
+                    <path d="M18 22V8a2 2 0 00-2-2H2" />
+                </svg>
+                Crop
+            </button>
+
+            <div class="sep"></div>
+
+            <!-- Pencil color -->
+            <div class="color-group" *ngIf="activeTool === 'pencil'">
+                <span class="tool-label">Color</span>
+                <input type="color" [(ngModel)]="brushColor" class="color-input" />
+                <span *ngFor="let c of ['#e63946','#2196F3','#4CAF50','#FF9800','#9C27B0','#000000']" class="swatch"
+                    [style.background]="c" [class.sel]="brushColor === c" (click)="brushColor = c">
+                </span>
+            </div>
+
+            <!-- Highlight color -->
+            <div class="color-group" *ngIf="activeTool === 'highlight'">
+                <span class="tool-label">Color</span>
+                <input type="color" [(ngModel)]="highlightColor" class="color-input" />
+                <span *ngFor="let c of ['#FFD60A','#FF6B6B','#69DB7C','#74C0FC','#FF922B']" class="swatch"
+                    [style.background]="c" [class.sel]="highlightColor === c" (click)="highlightColor = c">
+                </span>
+            </div>
+
+            <!-- Shape options (color + stroke width) -->
+            <div class="color-group" *ngIf="isShapeTool()">
+                <span class="tool-label">Color</span>
+                <input type="color" [(ngModel)]="shapeColor" class="color-input" />
+                <span *ngFor="let c of ['#3b82f6','#e63946','#4CAF50','#FF9800','#9C27B0','#000000']" class="swatch"
+                    [style.background]="c" [class.sel]="shapeColor === c" (click)="shapeColor = c">
+                </span>
+            </div>
+
+            <!-- Brush size -->
+            <div class="size-group" *ngIf="activeTool === 'pencil'">
+                <span class="tool-label">Size</span>
+                <input type="range" min="1" max="20" step="1" [(ngModel)]="brushSize" class="slider" />
+                <span class="size-val">{{ brushSize }}px</span>
+            </div>
+
+            <!-- Shape stroke width -->
+            <div class="size-group" *ngIf="isShapeTool()">
+                <span class="tool-label">Width</span>
+                <input type="range" min="1" max="12" step="1" [(ngModel)]="shapeStrokeWidth" class="slider" />
+                <span class="size-val">{{ shapeStrokeWidth }}px</span>
+            </div>
+
+            <!-- Crop actions -->
+            <div class="crop-actions" *ngIf="activeTool === 'crop' && cropRectW > 10 && cropRectH > 10">
+                <button class="btn-apply-crop" (click)="applyCrop()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round">
+                        <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    Apply Crop
+                </button>
+                <button class="btn-cancel-crop" (click)="cancelCrop()">Cancel</button>
+            </div>
+
+            <div class="sep" *ngIf="activeTool !== 'none' && activeTool !== 'crop' && activeTool !== 'eraser'"></div>
+
+            <span class="tool-hint" *ngIf="activeTool === 'pencil'">Click &amp; drag to draw</span>
+            <span class="tool-hint" *ngIf="activeTool === 'highlight'">Click &amp; drag to highlight</span>
+            <span class="tool-hint" *ngIf="activeTool === 'rect'">Drag to draw rectangle</span>
+            <span class="tool-hint" *ngIf="activeTool === 'circle'">Drag to draw ellipse</span>
+            <span class="tool-hint" *ngIf="activeTool === 'line'">Drag to draw line</span>
+            <span class="tool-hint" *ngIf="activeTool === 'arrow'">Drag to draw arrow</span>
+            <span class="tool-hint" *ngIf="activeTool === 'eraser'">Click on a drawing to erase it</span>
+            <span class="tool-hint" *ngIf="activeTool === 'crop' && cropRectW < 10">Draw a rectangle to crop</span>
+            <span class="tool-hint" *ngIf="activeTool === 'none'">Select a tool to annotate</span>
+        </div>
+
+        <!-- ── Canvas ── -->
+        <div class="canvas-scroll">
+            <div class="canvas-container" [style.width.px]="canvasW + 16" [style.height.px]="canvasH + 16">
+
+                <canvas #editorCanvas [style.cursor]="cursorStyle" (mousedown)="onCanvasDown($event)"
+                    (mousemove)="onCanvasMove($event)" (mouseup)="onCanvasUp()" (mouseleave)="onCanvasUp()">
+                </canvas>
+
+                <!-- Crop selection overlay on the canvas -->
+                <div class="crop-overlay" *ngIf="activeTool === 'crop' && cropRectW > 0" [style.left.px]="cropRectX"
+                    [style.top.px]="cropRectY" [style.width.px]="cropRectW" [style.height.px]="cropRectH">
+                    <span class="h tl"></span>
+                    <span class="h tr"></span>
+                    <span class="h bl"></span>
+                    <span class="h br"></span>
+                    <div class="crop-size">{{ cropRectW }} × {{ cropRectH }}</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
